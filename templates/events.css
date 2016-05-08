@@ -1,0 +1,10 @@
+ul.toc { list-style-type: none; margin: 0; padding: 0; min-height: 5px; }
+/*li.toc-event { margin: 0 3px 3px 3px; padding-left: 1.4em; }
+*/
+li.toc-event:hover { cursor: move; }
+li.toc-event span { display: inline-block; }
+/*li.toc-event {
+    border: 1px solid #d3d3d3;
+    background: #e6e6e6 url("../scripts/images/ui-bg_glass_75_e6e6e6_1x400.png") 50% 50% repeat-x;
+}*/
+.ui-state-highlight { height: 1.2em; line-height: 1.1em; }

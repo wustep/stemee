@@ -1,0 +1,75 @@
+.c979004 { 
+  /*color: blue;*/
+  color: #3d85c6;
+}
+.c836635 {
+  color: #c00000;
+}
+.c836634 {
+  color: #073763;
+}
+body {
+  font-family: Arial;
+  font-size: 14px;
+}
+/*
+.count > .toc-event:before, .info-event:before {
+  counter-increment: toc;
+  content: counter(toc) ".";
+  margin-right: 5px;	
+  font-weight: bold;
+}
+
+.count-reset{
+  counter-reset: toc;
+}
+*/
+.info-event {
+  font-size: 14px;
+}
+
+.info-event-desc {
+  color: black;
+  font-weight:bold;
+}
+
+.info-event-notes {
+  color:black;
+}
+
+.dcd-toc {
+  font-weight: bold;
+  font-size: 19px;
+  text-decoration: underline;
+}
+
+.dcd-list {
+  font-weight: bold;
+  font-size: 17px;
+}
+
+.dcd-events {
+  font-weight: bold;
+  font-size: 16px;
+}
+
+
+.dcd-stemee {
+  color: #073763;  
+}
+
+.dcd-scholarships {
+  color: #548235;
+}
+
+.dcd-research {
+  color: #00b0f0;
+}
+
+.dcd-service {
+  color: #7030a0;
+}
+
+.dcd-campus {
+  color: #c00000;
+}
