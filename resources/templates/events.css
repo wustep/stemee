@@ -12,6 +12,7 @@ div.event-add a:hover {
 }
 span.ui-icon { 
   display: inline-block; 
+  background-image: url(../../lib/jquery/images/ui-icons_222222_256x240.png);
 }
 .ui-state-highlight { 
   height: 1.2em; 

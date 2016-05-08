@@ -4,29 +4,7 @@
 <title>STEM EE Tools</title>
 <link rel="stylesheet" href="lib/jquery/jquery-ui.min.css">
 <link href="resources/css/normalize.css" rel="stylesheet">
-<style>
-.fluid { /* from bymichaellancaster.com */
-    position: relative;
-    padding-bottom: 56.25%; 
-    padding-top: 30px;
-    height: 0;
-    overflow: hidden;
-	border: 1px solid black;
-}
-
-.fluid iframe {
-    position: absolute;
-    top: 0; 
-    left: 0;
-    width: 100%;
-    height: 100%;
-}
-
-body {
-	font-family: Helvetica, Arial;
-	margin: 5px;
-}
-</style>
+<link href="resources/css/dcd.css" rel="stylesheet">
 </head>
 <body>
 	<h1>DCD Generator</h1><br>
