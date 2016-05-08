@@ -1,0 +1,19 @@
+ul.toc { 
+  list-style-type: none; 
+  margin: 0; 
+  padding: 0; 
+  min-height: 5px; 
+}
+li.toc-event:hover { 
+  cursor: move; 
+}
+div.event-add a:hover { 
+  cursor: pointer; text-decoration: underline; 
+}
+span.ui-icon { 
+  display: inline-block; 
+}
+.ui-state-highlight { 
+  height: 1.2em; 
+  line-height: 1.1em; 
+}

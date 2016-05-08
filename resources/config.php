@@ -1,4 +1,5 @@
 <?php
+	// This file is not used at the moment
 	const DB_HOST = 'host';
 	const DB_USER = 'user';
 	const DB_PASS = 'pass';
