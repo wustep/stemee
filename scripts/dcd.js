@@ -166,7 +166,7 @@ function generateDCD2(data) { // Dump ALL the events! -- Old version
 					} else if (subI == "location" && subObject.length > 0) {
 						ev = ev + ", " + subObject;
 					} else if (subI == "notes") {
-						ev = "<b>" + ev + "</b><br>" + subObject.replace(/(<p[^>]+?>|<p>|<\/p>)/img, "").replace(/\n/g, "<br>");
+						ev = ev + "<br>" + subObject.replace(/(<p[^>]+?>|<p>|<\/p>)/img, "").replace(/\n/g, "<br>");
 					}
 					console.log(subI + "=" + subObject);
 				});

@@ -33,7 +33,7 @@ body {
 	Date: <input type="text" id="dcd-start"> to 
 	<input type="text" id="dcd-end"><br>
 	<div style="display:none">Template: <select id="template"><option id="stemee" selected>STEM EE</option></select></div><br><br>
-	<input type="button" id="submit" value="Submit">&nbsp;<input type="button" id="select-all" value="Copy"/><br><br>
+	<input type="button" id="submit" value="Submit">&nbsp;<input type="button" id="copy" value="Copy"/><br><br>
 	<div id="data" class="fluid" style="display:none">
 		<iframe id="output">
 		</iframe>
@@ -44,22 +44,23 @@ body {
 	<script src="scripts/date.js"></script>
 	<script>
 	$(function() {
-		$( "#dcd-start" ).datepicker({
+		$("#copy").button().button("disable");
+		$("#dcd-start").datepicker({
 		  defaultDate: "+1w",
 		  changeMonth: true,
 		  dateFormat: "yy-mm-dd",
 		  numberOfMonths: 2,
 		  onClose: function( selectedDate ) {
-			$( "#dcd-end" ).datepicker( "option", "minDate", selectedDate );
+			$("#dcd-end").datepicker( "option", "minDate", selectedDate );
 		  }
 		});
-		$( "#dcd-end" ).datepicker({
+		$("#dcd-end").datepicker({
 		  defaultDate: "+1w",
 		  changeMonth: true,
 		  dateFormat: "yy-mm-dd",
 		  numberOfMonths: 2,
 		  onClose: function( selectedDate ) {
-			$( "#dcd-start" ).datepicker( "option", "maxDate", selectedDate );
+			$("#dcd-start").datepicker( "option", "maxDate", selectedDate );
 		  }
 		});
 		var nextMonday = Date.parse("2016-04-11").toString("yyyy-MM-dd");
@@ -73,6 +74,7 @@ body {
 		var endDate = $("#dcd-end").attr('value');
 		$("#submit").button().click(function() {
 			$("#submit").button("disable");
+			$("#copy").button("enable");
 			var startDate = $("#dcd-start").prop('value');
 			var endDate = $("#dcd-end").prop('value');
 			var template = $("#template option:selected").attr('id');
@@ -87,7 +89,7 @@ body {
 							var jQueryUICSS = "<link rel='stylesheet' href='../scripts/jquery-ui.min.css'>";
 							var eventsCSS = "<link rel='stylesheet' href='events.css'>";
 							$("iframe#output").contents().find("head").append(jQueryUICSS + eventsCSS);
-							$("iframe#output").contents().find(".toc").sortable({ 
+							$("iframe#output").contents().find("ul.toc").sortable({ 
 								connectWith: ".toc", 
 								placeholder: "ui-state-highlight", 
 								stop: function(event, ui) {
@@ -95,13 +97,25 @@ body {
 									console.log(event);
 								}
 							}).disableSelection();
-							var $sortIcon = $("<span class='ui-icon ui-icon-arrowthick-2-n-s'></span>");
+							numberEvents();
+							
+							var $sortIcon = $("<span class='event-drag ui-icon ui-icon-arrowthick-2-n-s'></span>");
 							$("iframe#output").contents().find(".toc-event").hover(function() {
 								$(this).prepend($sortIcon);
 							}, function() {
 								$sortIcon.remove();
 							});
-							numberEvents();
+							
+							var $addEvent = $("<div class='event-add'><a class='event-add-link'><span class='ui-icon ui-icon-plusthick'></span> Add event<br></a></div>");
+							$("iframe#output").contents().find("ul.toc").hover(function() {
+								$(this).after($addEvent);
+							}, function() {
+								$sortIcon.remove();
+							});
+							
+							$("iframe#output").contents().find("a.event-add-link").click(function() {
+								console.log("test");
+							});
 					});
 				},
 				function(xhr) {
@@ -111,11 +125,13 @@ body {
 				}
 			);
 		});
-		$("#select-all").button().click(function() {
+		$("#copy").button().click(function() {
 			var iframe = $('iframe#output')[0];
+			$('iframe#output').contents().find(".event-drag, .event-add").remove(); // Get rid of sort and add event buttons
 			iframe.contentWindow.focus();
 			iframe.contentDocument.execCommand('selectAll');
 			iframe.contentDocument.execCommand('copy');
+			alert("DCD copied to clipboard!\n\nIf that didn't work, use Ctrl+C or Command+C after pressing this button!")
 		});
 		function numberEvents() {
 			var count = 1;
