@@ -220,7 +220,7 @@ $(function() {
 				$('iframe#output').attr('src', 'resources/templates/' +template+'.html');
 				$('iframe#output').load(function() {
 					generateDCD(data, $("iframe#output").contents().find("#content"), template);
-					var jQueryUICSS = "<link rel='stylesheet' href='../lib/jquery/jquery-ui.min.css'>";
+					var jQueryUICSS = "<link rel='stylesheet' href='../../lib/jquery/jquery-ui.min.css'>";
 					var eventsCSS = "<link rel='stylesheet' href='events.css'>";
 					$("iframe#output").contents().find("head").append(jQueryUICSS + eventsCSS);
 					$("iframe#output").contents().find("ul.toc").sortable({ 
