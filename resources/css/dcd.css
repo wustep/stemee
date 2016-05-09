@@ -1,25 +1,40 @@
-.fluid { /* from bymichaellancaster.com */
-    position: relative;
-    padding-bottom: 56.25%; 
-    padding-top: 30px;
-    height: 0;
-    overflow: hidden;
-	border: 1px solid black;
+.fluid { /* (fluid iframe from bymichaellancaster.com) */
+  position: relative;
+  padding-bottom: 56.25%; 
+  padding-top: 30px;
+  height: 0;
+  overflow: hidden;
+  border: 1px solid black;
 }
 
 .fluid iframe {
-    position: absolute;
-    top: 0; 
-    left: 0;
-    width: 100%;
-    height: 100%;
+  position: absolute;
+  top: 0; 
+  left: 0;
+  width: 100%;
+  height: 100%;
 }
 
 body {
-	font-family: Helvetica, Arial;
-	margin: 5px;
+  font-family: Helvetica,Arial,sans-serif;
+  margin: 5px;
 }
 
-button {
-  font-size: 1em;
+input#copy, input#submit {
+  font-size: 1.05em;
+}
+
+#event-add-fieldset input, #event-add-fieldset textarea {
+  width: 95%; 
+  margin-bottom: 12px;
+  padding: .4em;
+}
+
+#event-add-form {
+  height: 100%;
+}
+
+#event-add-desc {
+  height: 13em;
+  resize: vertical;
 }

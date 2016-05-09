@@ -1,29 +1,7 @@
-.c979004 { 
-  /*color: blue;*/
-  color: #3d85c6;
-}
-.c836635 {
-  color: #c00000;
-}
-.c836634 {
-  color: #073763;
-}
 body {
   font-family: Arial;
   font-size: 14px;
 }
-/*
-.count > .toc-event:before, .info-event:before {
-  counter-increment: toc;
-  content: counter(toc) ".";
-  margin-right: 5px;	
-  font-weight: bold;
-}
-
-.count-reset{
-  counter-reset: toc;
-}
-*/
 .info-event {
   font-size: 14px;
 }
@@ -34,11 +12,11 @@ body {
 
 .info-event-desc {
   color: black;
-  font-weight:bold;
+  font-weight: bold;
 }
 
 .info-event-notes {
-  color:black;
+  color: black;
 }
 
 .dcd-toc {
@@ -58,31 +36,31 @@ body {
   font-size: 16px;
 }
 
-
-.dcd-stemee {
-  color: #073763;  
+.cal-836634, .dcd-stemee, .set-stemee {
+  color: #073763;
 }
-
-.dcd-scholarships {
+.cal-979004, .dcd-hs, .set-hs { 
+  color: #3d85c6;
+}
+.cal-836635, .dcd-campus, .set-campus {
+  color: #c00000;
+}
+.dcd-scholarships, .set-scholarships {
   color: #548235;
 }
 
-.dcd-research {
+.dcd-research, .set-research {
   color: #00b0f0;
 }
 
-.dcd-service {
+.dcd-service, .set-service {
   color: #7030a0;
-}
-
-.dcd-campus {
-  color: #c00000;
 }
 
 .dcd-birthdays {
   color: #ed7d31;
 }
 
-.dcd-lifehacks {
+.dcd-lifehacks, .set-lifehacks {
   color: #767171;
 }
