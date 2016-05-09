@@ -55,73 +55,36 @@ function makeCorsRequest(url, successCallback, errorCallback) {
     xhr.send();
 }
 
-function generateDCD(data, body) {
-	var results = "";
-	body.find('ul.fetch, div.fetch').each(function() {
-		if ($(this).hasClass("toc")) {
-			var self = this;
-			$.each(data, function (item, value) {
-				if (item == "events") {
-					$.each(value, function (i, object) {
-						var calendar = "cal-" + object["subcalendar_id"];
-						if ($(self).hasClass(calendar)) {
-						$(self).append("<li class='toc-event event-" + object["id"] +"'>" + object["title"] + "</li>")
+function generateDCD(data) {
+	$.each(data, function (item, value) {
+		if (item == "events") {
+			$.each(value, function (i, object) {
+				var cal = "cal-" + object["subcalendar_id"];
+				var id = object["id"];
+				var title = object["title"];
+				
+				var info = "";
+				var location = object["location"];
+				var startDate = object["start_dt"].substring(0,19);
+				var endDate = object["end_dt"].substring(0,19);
+				if (startDate.length > 0) {
+					var allday = object["all_day"] ? "" : ", h:sstt";
+					var date = Date.parse(startDate).toString("dddd, MMMM d" + allday);
+					if (startDate.substring(0, 10) == endDate.substring(0, 10)) { // if end date (mm/dd/yy) is same
+						if (!object["all_day"]) { // If not all day
+							date = date + "-" + (Date.parse(endDate).toString("h:sstt")) || "<b>Invalid date</b>"; // Add end-time
 						}
-					}); 
+					} else { // Otherwise
+						date = date + "-" + (Date.parse(endDate).toString("dddd, MMMM d" + allday)) || "<b>Invalid date</b>"; // Add end date/time
+					}
+					info = date + ((location.length > 0) ? ", " + location : "");
 				}
+				
+				var notes = object["notes"];
+				addEvent(cal, id, title, info, notes);
 			});
-		} else if ($(this).hasClass("info")) {
-			var self = this;
-			$.each(data, function (item, value) {
-				if (item == "events") {
-					$.each(value, function (i, object) {
-						var calendar = "cal-" + object["subcalendar_id"];
-						if ($(self).hasClass(calendar)) {
-							var ev = "";
-							var cal = 0;
-							var startDate = "";
-							var endDate = "";
-							var id = "";
-							$.each(object, function (subI, subObject) { // TODO: Recode to just use object["subI"] instead of loop
-								if (subI == "subcalendar_id") {
-									cal = subObject;
-								} else if (subI == "id") {
-									id = subObject;
-								} else if (subI == "title") {
-									ev = "<span class='cal-"+cal+" info-event-title'>" + subObject + '</span><br>' + ev;
-								} else if (subI == "start_dt") {
-									startDate = subObject.substring(0,19);	
-								} else if (subI == "end_dt") {
-									endDate = subObject.substring(0,19);
-								} else if (subI == "all_day") {
-									//alert(subObject + " " + startDate);
-									if (startDate.length > 0) {
-										var allday = (subObject) ? "" : ", h:sstt";
-										var date = Date.parse(startDate).toString("dddd, MMMM d" + allday);
-										//alert(startDate.substring(0, 10));
-										if (startDate.substring(0, 10) == endDate.substring(0, 10)) { // if end date (mm/dd/yy) is same
-											if (!subObject) { // If not all day
-												date = date + "-" + (Date.parse(endDate).toString("h:sstt")) || "<b>Invalid date</b>"; // Add end-time
-											}
-										} else { // Otherwise
-											date = date + "-" + (Date.parse(endDate).toString("dddd, MMMM d" + allday)) || "<b>Invalid date</b>"; // Add end date/time
-										}
-										ev = ev + date;
-									}
-								} else if (subI == "location" && subObject.length > 0) {
-									ev = ev + ", " + subObject;
-								} else if (subI == "notes") {
-									ev = "<span class='info-event-desc'>" + ev + "</span><br><span class='info-event-notes'>" + subObject + "</span>";
-								}
-							});
-							$(self).append("<span id='e-"+id+"' class='info-event event-"+id+"'><br>"+ev+"<br></span>");
-						}
-					});
-				}
-			});		
 		}
 	});
-	return results;
 }
 
 function numberEvents() { // (Re)number events based on count and count-reset classes in DIVs and ULs
@@ -197,7 +160,7 @@ $(function() {
 				$('iframe#output').load(function() {
 					var iframe = $(this).contents();
 					
-					generateDCD(data, iframe.find("#content")); // Generate DCD
+					generateDCD(data); // Generate DCD
 					
 					// Add jQueryUI, Event CSS (for icons and sortables)
 					var jQueryUICSS = "<link rel='stylesheet' href='../../lib/jquery/jquery-ui.min.css'>";
