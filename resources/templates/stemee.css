@@ -1,9 +1,9 @@
 body {
   font-family: Arial;
-  font-size: 14px;
+  font-size: 14.5px;
 }
 .info-event {
-  font-size: 14px;
+  font-size: 14.5px;
 }
 
 .info-event-title {
@@ -21,13 +21,13 @@ body {
 
 .dcd-toc {
   font-weight: bold;
-  font-size: 19px;
+  font-size: 20px;
   text-decoration: underline;
 }
 
 .dcd-list {
   font-weight: bold;
-  font-size: 18px;
+  font-size: 19px;
   text-decoration: underline;
 }
 
@@ -37,10 +37,10 @@ body {
 }
 
 .cal-836634, .dcd-stemee, .set-stemee {
-  color: #073763;
+  color: #ffc000;
 }
 .cal-979004, .dcd-hs, .set-hs { 
-  color: #3d85c6;
+  color: #7399f9;
 }
 .cal-836635, .dcd-campus, .set-campus {
   color: #c00000;
@@ -63,4 +63,22 @@ body {
 
 .dcd-lifehacks, .set-lifehacks {
   color: #767171;
+}
+
+.social-media-btn {
+    height: 60px;
+    padding: 1px 10px 1px 9px;
+    border-radius: 4px;
+    position: relative;
+    font-weight: 500;
+    color: #fff;
+    cursor: pointer;
+    box-sizing: border-box;
+	text-decoration: none;
+}
+.twitter-btn {
+    background-color: #1b95e0;
+}
+.facebook-btn {
+	background-color: #3a5795;
 }

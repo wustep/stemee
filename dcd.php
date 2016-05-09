@@ -19,19 +19,19 @@
 	<div id="event-add-dialog" title="Add event" style="display:none;">
 	  <form id="event-add-form">
 		<fieldset id="event-add-fieldset">
-		  <label for="name">Name</label><br>
+		  <label for="event-add-name">Name</label><br>
 		  <input type="text" name="name" id="event-add-name" value="" class="ui-widget-content" autocomplete="off"><br>
-		  <label for="info">Info (Optional)</label><br>
+		  <label for="event-add-info">Info (Optional)</label><br>
 		  <input type="text" name="info" id="event-add-info" placeholder="e.g. Tuesday, April 12, 5:20PM-6:00PM, Evans Lab Room 2004" value="" class="ui-widget-content" autocomplete="off"><br>
-		  <label for="desc">Description</label><br>
-		  <textarea name="desc" id="event-add-notes" value="" class="ui-widget-content" autocomplete="off"></textarea>
+		  <label for="event-add-notes">Description</label><br>
+		  <textarea name="desc" id="event-add-notes" class="ui-widget-content"></textarea>
 		</fieldset>
 	  </form>
 	</div>	
 
 	<div id="event-delete-dialog" title="Delete event" style="display:none;">
 		<span id="event-delete-id" style="display:none"></span>
-		<p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>Event<span id='event-delete-name'></span> will be permanently deleted and cannot be recovered.<br><br>Are you sure?</p>
+		<p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>Event<span id='event-delete-name'></span> will be permanently deleted and cannot be recovered unless a new DCD is generated.<br><br>Are you sure?</p>
 	</div>
 
 	<script src="lib/jquery/jquery.min.js"></script>

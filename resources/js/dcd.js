@@ -65,7 +65,7 @@ function generateDCD(data, body) {
 					$.each(value, function (i, object) {
 						var calendar = "cal-" + object["subcalendar_id"];
 						if ($(self).hasClass(calendar)) {
-							$(self).append("<li class='toc-event event-" + object["id"] +"'>" + object["title"] + "</li>")
+						$(self).append("<li class='toc-event event-" + object["id"] +"'>" + object["title"] + "</li>")
 						}
 					}); 
 				}
@@ -111,10 +111,10 @@ function generateDCD(data, body) {
 								} else if (subI == "location" && subObject.length > 0) {
 									ev = ev + ", " + subObject;
 								} else if (subI == "notes") {
-									ev = "<span class='info-event-desc'>" + ev + "</span><br><span class='info-event-notes'>" + subObject.replace(/(<p[^>]+?>|<p>|<\/p>)/img, "").replace(/\n/g, "<br>") + "</span>";
+									ev = "<span class='info-event-desc'>" + ev + "</span><br><span class='info-event-notes'>" + subObject + "</span>";
 								}
 							});
-							$(self).append("<span class='info-event event-"+id+"'><br>"+ev+"<br></span>");
+							$(self).append("<span id='e-"+id+"' class='info-event event-"+id+"'><br>"+ev+"<br></span>");
 						}
 					});
 				}
@@ -149,7 +149,7 @@ function addEvent(set, eventId, eventName, eventInfo, eventNotes) { // Add a new
 	$("iframe#output").contents().find("ul." + set).first().append("<li class='toc-event event-"+eventId+" ui-sortable-handle'>"+eventName+"</li>");
 	var info = (eventInfo.length > 0) ? "<br>" + eventInfo : "";
 	var notes = (eventNotes.length > 0) ? "<br><span class='info-event-notes'>"+eventNotes+"</span>" : "";
-	$("iframe#output").contents().find("div." + set).first().append("<span class='info-event event-"+eventId+"'><br><span class='info-event-desc'><span class='info-event-title "+set+"'>"+eventName+"</span>"+info+'</span>'+notes+"<br></span>");
+	$("iframe#output").contents().find("div." + set).first().append("<span id='e-"+eventId+"' class='info-event event-"+eventId+"'><br><span class='info-event-desc'><span class='info-event-title "+set+"'>"+eventName+"</span>"+info+'</span>'+notes+"<br></span>");
 	numberEvents();
 }
 
@@ -267,7 +267,7 @@ $(function() {
 	});
 	$("#copy").button().click(function() {
 		var iframe = $('iframe#output')[0];
-		$('iframe#output').contents().find(".event-drag, .event-add").remove(); // Get rid of sort and add event buttons
+		$('iframe#output').contents().find("#event-drag, #event-add").remove(); // Get rid of sort and add event buttons
 		iframe.contentWindow.focus();
 		iframe.contentDocument.execCommand('selectAll');
 		iframe.contentDocument.execCommand('copy');
@@ -298,7 +298,7 @@ $(function() {
 		resizable: false,
 		autoOpen: false,
 		height: 300,
-		width: 500,
+		width: 600,
 		buttons: {
 			"Delete": function() { // Delete SPANs and LIs corresponding to class "event-#"
 				var eventId = $("#event-delete-id").html();
