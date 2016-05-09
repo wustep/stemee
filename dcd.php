@@ -29,6 +29,11 @@
 	  </form>
 	</div>	
 
+	<div id="event-delete-dialog" title="Delete event" style="display:none;">
+		<span id="event-delete-id" style="display:none"></span>
+		<p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span>Event<span id='event-delete-name'></span> will be permanently deleted and cannot be recovered.<br><br>Are you sure?</p>
+	</div>
+
 	<script src="lib/jquery/jquery.min.js"></script>
 	<script src="lib/jquery/jquery-ui.min.js"></script>
 	<script src="lib/date.js"></script>

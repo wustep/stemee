@@ -4,11 +4,15 @@ ul.toc {
   padding: 0; 
   min-height: 5px; 
 }
+a#event-add-link:hover { 
+  cursor: pointer; 
+  text-decoration: underline; 
+}
 li.toc-event:hover { 
   cursor: move; 
 }
-div.event-add a:hover { 
-  cursor: pointer; text-decoration: underline; 
+a#event-add-link:hover .ui-icon, #event-drag.event-drag-active {
+  background-image: url(../../lib/jquery/images/ui-icons_cd0a0a_256x240.png);
 }
 span.ui-icon { 
   display: inline-block; 
@@ -17,4 +21,22 @@ span.ui-icon {
 .ui-state-highlight { 
   height: 1.2em; 
   line-height: 1.1em; 
+}
+
+#event-add-link .ui-icon {
+  margin: 0 3px;
+}
+
+#event-drag {
+  margin: 0 3px;
+}
+
+#event-delete {
+  margin: 0 0 0 3px;
+  right: 0;
+}
+
+#event-delete:hover {
+  background-image: url(../../lib/jquery/images/ui-icons_cd0a0a_256x240.png);
+  cursor: pointer;
 }

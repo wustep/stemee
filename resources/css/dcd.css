@@ -34,7 +34,11 @@ input#copy, input#submit {
   height: 100%;
 }
 
-#event-add-desc {
+#event-add-notes {
   height: 13em;
   resize: vertical;
+}
+
+#event-delete-name {
+  font-weight: bold;
 }

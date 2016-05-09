@@ -114,7 +114,7 @@ function generateDCD(data, body) {
 									ev = "<span class='info-event-desc'>" + ev + "</span><br><span class='info-event-notes'>" + subObject.replace(/(<p[^>]+?>|<p>|<\/p>)/img, "").replace(/\n/g, "<br>") + "</span>";
 								}
 							});
-							$(self).append("<br><span class='info-event event-"+id+"'>"+ev+"</span><br>");
+							$(self).append("<span class='info-event event-"+id+"'><br>"+ev+"<br></span>");
 						}
 					});
 				}
@@ -124,7 +124,7 @@ function generateDCD(data, body) {
 	return results;
 }
 
-function numberEvents() {
+function numberEvents() { // (Re)number events based on count and count-reset classes in DIVs and ULs
 	var count = 1;
 	$("iframe#output").contents().find("ul.count, div.count").each(function() {
 		if ($(this).hasClass("count-reset")) count = 1;
@@ -137,7 +137,7 @@ function numberEvents() {
 	});
 }
 
-function getNewEventId() {
+function getNewEventId() { // Get an unused event ID
 	var id = 1;
 	while ($("iframe#output").contents().find("li.event-"+id+", span.event-"+id).length > 0) {
 		id++;
@@ -145,11 +145,11 @@ function getNewEventId() {
 	return id;
 }
 
-function addEvent(set, eventId, eventName, eventInfo, eventNotes) {
+function addEvent(set, eventId, eventName, eventInfo, eventNotes) { // Add a new event to the set specified (both UL and DIV)
 	$("iframe#output").contents().find("ul." + set).first().append("<li class='toc-event event-"+eventId+" ui-sortable-handle'>"+eventName+"</li>");
 	var info = (eventInfo.length > 0) ? "<br>" + eventInfo : "";
 	var notes = (eventNotes.length > 0) ? "<br><span class='info-event-notes'>"+eventNotes+"</span>" : "";
-	$("iframe#output").contents().find("div." + set).first().append("<br><span class='info-event event-"+eventId+"'><span class='info-event-desc'><span class='info-event-title "+set+"'>"+eventName+"</span>"+info+'</span>'+notes+"</span><br>");
+	$("iframe#output").contents().find("div." + set).first().append("<span class='info-event event-"+eventId+"'><br><span class='info-event-desc'><span class='info-event-title "+set+"'>"+eventName+"</span>"+info+'</span>'+notes+"<br></span>");
 	numberEvents();
 }
 
@@ -195,7 +195,7 @@ $(function() {
 				$('#data').show();
 				$('iframe#output').attr('src', 'resources/templates/stemee.html');
 				$('iframe#output').load(function() {
-					var iframe = $('iframe#output').contents();
+					var iframe = $(this).contents();
 					
 					generateDCD(data, iframe.find("#content")); // Generate DCD
 					
@@ -204,39 +204,58 @@ $(function() {
 					var eventsCSS = "<link rel='stylesheet' href='events.css'>";
 					iframe.find("head").append(jQueryUICSS + eventsCSS);
 					
+					// Add sort and delete icons on hover
+					var $sortIcon = $("<span id='event-drag' class='ui-icon ui-icon-arrowthick-2-n-s'></span>");
+					var $deleteIcon = $("<span id='event-delete' class='ui-icon ui-icon-closethick'></span>")
+					iframe.find(".toc").on("mouseenter", "li.toc-event", function() {
+						$(this).prepend($sortIcon);
+						$(this).append($deleteIcon);
+						var self = $(this);
+						$deleteIcon.click(function() { // Make delete icon open delete dialog
+							var event = self.attr("class").match(/event\-\w{1,}/)[0];
+							eventDelete.dialog("open");
+							$('span#event-delete-id').html(event);
+							$('span#event-delete-name').html(self.contents().filter(function() { return this.nodeType == 3 })[0].nodeValue).prepend(" ");
+						});
+					});
+					iframe.find(".toc").on("mouseleave", "li.toc-event", function() {
+						$sortIcon.remove();
+						$deleteIcon.remove();
+					});
+					
 					// Make TOC events sortable
-					$("iframe#output").contents().find("ul.toc").sortable({ 
+					iframe.find("ul.toc").sortable({ 
 						connectWith: ".toc", 
-						placeholder: "ui-state-highlight", 
+						placeholder: "ui-state-highlight",
+						start: function(event, ui) {
+							$deleteIcon.remove();
+							$sortIcon.addClass("event-drag-active");
+						},
 						stop: function(event, ui) {
+							$sortIcon.remove();
 							numberEvents();
-							console.log(event);
+							$(ui["item"][0]).prepend($sortIcon); // Fix sort icon location
+							$sortIcon.removeClass("event-drag-active");
+							$(ui["item"][0]).append($deleteIcon); // Re-add delete icon
 						}
 					}).disableSelection();
 					numberEvents();
 					
-					// Add sort icon on hover
-					var $sortIcon = $("<span class='event-drag ui-icon ui-icon-arrowthick-2-n-s'></span>");
-					$("iframe#output").contents().find(".toc-event").hover(function() {
-						$(this).prepend($sortIcon);
-					}, function() {
-						$sortIcon.remove();
-					});
-					
 					// Add add event option on hover
-					var $addEvent = $("<div class='event-add'><a class='event-add-link'><span class='ui-icon ui-icon-plusthick'></span> Add event<br></a></div>");
+					var $addEvent = $("<div id='event-add'><a id='event-add-link'><span class='ui-icon ui-icon-plusthick'></span>Add event<br></a></div>");
 					iframe.find("ul.toc").hover(function(e) {
 						//var $target = $(e.currentTarget);
 						var set = $(this).attr("class").match(/set\-\w{1,}/)[0];
 						$(this).after($addEvent);
 						$addEvent.click(function() {
-							dialog.dialog("open");
+							eventAdd.dialog("open");
 							$("#event-add-form").removeClass();
 							$("#event-add-form").addClass(set); // Let the dialog know which set to put the event in through classes
 						});
 					}, function() {
 						$sortIcon.remove();
 					});
+					
 				});
 			},
 			function(xhr) { // Failure
@@ -255,21 +274,40 @@ $(function() {
 		alert("DCD copied to clipboard!\n\nIf that didn't work, use Ctrl+C or Command+C after pressing this button!")
 	});
 	
-	dialog = $("#event-add-dialog").dialog({
+	var eventAdd = $("#event-add-dialog").dialog({
 		modal: true,
 		height: 600,
 		width: 700,
 		autoOpen: false,
 		buttons: {
 			Create: function() {
-				var set = $("#event-add-form").attr("class");
+				var set = $("#event-add-form").attr("class"); // Assumes set is ONLY class of #event-add-form
 				if (set.length > 3) {
 					addEvent(set, getNewEventId(), $("#event-add-name").val(), $("#event-add-info").val(), $("#event-add-notes").val());
-					dialog.dialog("close");
+					$(this).dialog("close");
 				} // Otherwise something probably went wrong
 			},
 			Cancel: function() {
-				dialog.dialog("close");
+				$(this).dialog("close");
+			}
+		}
+	});
+
+    var eventDelete = $("#event-delete-dialog").dialog({
+		modal: true,
+		resizable: false,
+		autoOpen: false,
+		height: 300,
+		width: 500,
+		buttons: {
+			"Delete": function() { // Delete SPANs and LIs corresponding to class "event-#"
+				var eventId = $("#event-delete-id").html();
+				$("iframe#output").contents().find("span." + eventId + ", li." + eventId).remove();
+				numberEvents();
+				$(this).dialog("close");
+			},
+			Cancel: function() {
+				$(this).dialog("close");
 			}
 		}
 	});
