@@ -55,14 +55,15 @@ function makeCorsRequest(url, successCallback, errorCallback) {
     xhr.send();
 }
 
-function generateDCD(data) {
+function generateDCD(data) { // Get events from teamup calendar and add them to the iframe
 	$.each(data, function (item, value) {
 		if (item == "events") {
 			$.each(value, function (i, object) {
+				// Get title, id, cal info
 				var cal = "cal-" + object["subcalendar_id"];
 				var id = object["id"];
 				var title = object["title"];
-				
+				// Make event info line
 				var info = "";
 				var location = object["location"];
 				var startDate = object["start_dt"].substring(0,19);
@@ -70,16 +71,16 @@ function generateDCD(data) {
 				if (startDate.length > 0) {
 					var allday = object["all_day"] ? "" : ", h:sstt";
 					var date = Date.parse(startDate).toString("dddd, MMMM d" + allday);
-					if (startDate.substring(0, 10) == endDate.substring(0, 10)) { // if end date (mm/dd/yy) is same
+					if (startDate.substring(0, 10) == endDate.substring(0, 10)) { // If end date (mm/dd/yy) is same
 						if (!object["all_day"]) { // If not all day
 							date = date + "-" + (Date.parse(endDate).toString("h:sstt")) || "<b>Invalid date</b>"; // Add end-time
 						}
-					} else { // Otherwise
+					} else { // If end date is different, display whole end date
 						date = date + "-" + (Date.parse(endDate).toString("dddd, MMMM d" + allday)) || "<b>Invalid date</b>"; // Add end date/time
 					}
 					info = date + ((location.length > 0) ? ", " + location : "");
 				}
-				
+				// Get notes and add event
 				var notes = object["notes"];
 				addEvent(cal, id, title, info, notes);
 			});
@@ -87,7 +88,7 @@ function generateDCD(data) {
 	});
 }
 
-function numberEvents() { // (Re)number events based on count and count-reset classes in DIVs and ULs
+function numberEvents() { // (Re)number events based on .count and .count-reset classes in <div>s and <ul>s
 	var count = 1;
 	$("iframe#output").contents().find("ul.count, div.count").each(function() {
 		if ($(this).hasClass("count-reset")) count = 1;
@@ -108,7 +109,7 @@ function getNewEventId() { // Get an unused event ID
 	return id;
 }
 
-function addEvent(set, eventId, eventName, eventInfo, eventNotes) { // Add a new event to the set specified (both UL and DIV)
+function addEvent(set, eventId, eventName, eventInfo, eventNotes) { // Populate <ul>s and <div>s with corresponding <li>s and <span>s according to the right sets of events
 	$("iframe#output").contents().find("ul." + set).first().append("<li class='toc-event event-"+eventId+" ui-sortable-handle'>"+eventName+"</li>");
 	var info = (eventInfo.length > 0) ? "<br>" + eventInfo : "";
 	var notes = (eventNotes.length > 0) ? "<br><span class='info-event-notes'>"+eventNotes+"</span>" : "";
@@ -117,7 +118,7 @@ function addEvent(set, eventId, eventName, eventInfo, eventNotes) { // Add a new
 }
 
 $(function() {
-	$("#dcd-start").datepicker({
+	$("#dcd-start").datepicker({ // Set up #date-start input element
 	  defaultDate: "+1w",
 	  changeMonth: true,
 	  dateFormat: "yy-mm-dd",
@@ -126,7 +127,7 @@ $(function() {
 			$("#dcd-end").datepicker( "option", "minDate", selectedDate );
 	  }
 	});
-	$("#dcd-end").datepicker({
+	$("#dcd-end").datepicker({ // Set up #date-end input element
 	  defaultDate: "+1w",
 	  changeMonth: true,
 	  dateFormat: "yy-mm-dd",
@@ -135,25 +136,31 @@ $(function() {
 		$("#dcd-start").datepicker( "option", "maxDate", selectedDate );
 	  }
 	});
+	
+	// Set pre-established week 4-11 to 4-17 for now until next year
 	var nextMonday = Date.parse("2016-04-11").toString("yyyy-MM-dd");
 	var sundayAfter = Date.parse("2016-04-17").toString("yyyy-MM-dd");
-	//var nextMonday =  Date.today().next().monday().toString("yyyy-MM-dd");
-	//var sundayAfter = Date.today().next().monday().add(6).day().toString("yyyy-MM-dd");
-	
+	/* Populate inputs with next week Mon--Sun
+	var nextMonday =  Date.today().next().monday().toString("yyyy-MM-dd");
+	var sundayAfter = Date.today().next().monday().add(6).day().toString("yyyy-MM-dd");
+	*/	
 	$("#dcd-start").attr('value', nextMonday);
 	$("#dcd-end").attr('value', sundayAfter);
 
+	// Set up buttons
 	$("#copy").button().button("disable");
 	$("#reset").button().button("disable");
 	$("#submit").button().click(function() {
 		$("#submit").button("disable");
 		$("#copy").button("enable");
 		$("#reset").button("enable");
+		$("#dcd-start").datepicker("option", "disabled", "true");
+		$("#dcd-end").datepicker("option", "disabled", "true");
+		
 		var startDate = $("#dcd-start").prop('value');
 		var endDate = $("#dcd-end").prop('value');
-		makeCorsRequest(
-			'https://api.teamup.com/kse89a84dcb543ed5e/events?startDate='+startDate+'&endDate='+endDate,
-			function(xhr) { // Success
+		makeCorsRequest('https://api.teamup.com/kse89a84dcb543ed5e/events?startDate='+startDate+'&endDate='+endDate,
+			function(xhr) { // Success on making API request
 				var data = JSON.parse(xhr.responseText);
 				$('#data').show();
 				$('iframe#output').attr('src', 'resources/templates/stemee.html');
@@ -174,14 +181,16 @@ $(function() {
 						$(this).prepend($sortIcon);
 						$(this).append($deleteIcon);
 						var self = $(this);
-						$deleteIcon.click(function() { // Make delete icon open delete dialog
-							var event = self.attr("class").match(/event\-\w{1,}/)[0];
+						$deleteIcon.click(function() { // Make delete icon open delete dialog with name and id transfered to form
+							var eventId = self.attr("class").match(/event\-\w{1,}/)[0];
+							var node = self.contents().filter(function() { return this.nodeType == 3 })[0]; // Get text of element as node
+							var eventName = (node && node.length > 0) ? node.nodeValue : ""; // Get node value and deal with null case
+							$('span#event-delete-name').html(eventName.length > 0 ? " " + eventName : "");
+							$('span#event-delete-id').html(eventId);
 							eventDelete.dialog("open");
-							$('span#event-delete-id').html(event);
-							$('span#event-delete-name').html(self.contents().filter(function() { return this.nodeType == 3 })[0].nodeValue).prepend(" ");
 						});
 					});
-					iframe.find(".toc").on("mouseleave", "li.toc-event", function() {
+					iframe.find(".toc").on("mouseleave", "li.toc-event", function() { 
 						$sortIcon.remove();
 						$deleteIcon.remove();
 					});
@@ -239,13 +248,15 @@ $(function() {
 					
 				});
 			},
-			function(xhr) { // Failure
+			function(xhr) { // Report failure
 				var data = JSON.parse(xhr.responseText);
 				$('#data').show();
 				$('iframe#output').html('Request failed with code '+ xhr.status +': ' + JSON.stringify(data));
 			}
 		);
 	});
+	
+	// Copy and reset button functions 
 	$("#copy").button().click(function() {
 		var iframe = $('iframe#output')[0];
 		$('iframe#output').contents().find("#event-drag, #event-add").remove(); // Get rid of sort and add event buttons
@@ -258,6 +269,7 @@ $(function() {
 		eventReset.dialog("open");
 	});
 	
+	// Event add dialog
 	var eventAdd = $("#event-add-dialog").dialog({
 		modal: true,
 		height: 600,
@@ -277,14 +289,15 @@ $(function() {
 		}
 	});
 
+	// Event delete dialog
     var eventDelete = $("#event-delete-dialog").dialog({
 		modal: true,
 		autoOpen: false,
-		height: 300,
-		width: 600,
+		height: 250,
+		width: 500,
 		buttons: {
-			"Delete": function() { // Delete SPANs and LIs corresponding to class "event-#"
-				var eventId = $("#event-delete-id").html();
+			"Delete": function() { // Delete <span>s and <li>s corresponding to class .event-number
+				var eventId = $("#event-delete-id").html(); // Assumes .event-number is the only class of #event-delete-id
 				$("iframe#output").contents().find("span." + eventId + ", li." + eventId).remove();
 				numberEvents();
 				$(this).dialog("close");
@@ -295,13 +308,14 @@ $(function() {
 		}
 	});
 	
+	// Reset DCD dialog
 	var eventReset = $("#reset-dialog").dialog({
 		modal: true,
 		autoOpen: false,
-		height: 220,
+		height: 230,
 		width: 400,	
 		buttons: {
-			"Reset": function() { // Delete SPANs and LIs corresponding to class "event-#"
+			"Reset": function() {
 				location.reload();
 			},
 			Cancel: function() {

@@ -31,7 +31,7 @@
 
 	<div id="event-delete-dialog" title="Delete event" style="display:none;">
 		<span id="event-delete-id" style="display:none"></span>
-		<p><span class="ui-icon ui-icon-alert icon-attn"></span>Event<span id='event-delete-name'></span> will be permanently deleted and cannot be recovered unless a new DCD is generated.<br><br>Are you sure?</p>
+		<p><span class="ui-icon ui-icon-alert icon-attn"></span>Are you sure you want to delete the event<span id='event-delete-name'></span>?</p>
 	</div>
 	
 	<div id="reset-dialog" title="Reset Generator" style="display:none;">

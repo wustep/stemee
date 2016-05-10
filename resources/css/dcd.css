@@ -1,4 +1,17 @@
-.fluid { /* (fluid iframe from bymichaellancaster.com) */
+/* Body CSS */
+
+body {
+  font-family: Helvetica,Arial,sans-serif;
+  margin: 5px;
+}
+
+input#copy, input#submit, input#reset {
+  font-size: 1.05em;
+}
+
+/* Fluid iframe */
+
+.fluid {
   position: relative;
   padding-bottom: 56.25%; 
   padding-top: 30px;
@@ -15,14 +28,7 @@
   height: 100%;
 }
 
-body {
-  font-family: Helvetica,Arial,sans-serif;
-  margin: 5px;
-}
-
-input#copy, input#submit {
-  font-size: 1.05em;
-}
+/* Dialog CSS */
 
 #event-add-fieldset input, #event-add-fieldset textarea {
   width: 95%; 
@@ -42,11 +48,12 @@ input#copy, input#submit {
 #event-delete-name {
   font-weight: bold;
 }
+
 #buttons input {
   margin-right: 10px;
 }
 
 .icon-attn {
-	float: left; 
-	margin: 0 7px 20px 0;
+  float: left; 
+  margin: 0 7px 20px 0;
 }
