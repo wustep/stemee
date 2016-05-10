@@ -78,7 +78,7 @@ function generateDCD(data) { // Get events from teamup calendar and add them to 
 					} else { // If end date is different, display whole end date
 						date = date + "-" + (Date.parse(endDate).toString("dddd, MMMM d" + allday)) || "<b>Invalid date</b>"; // Add end date/time
 					}
-					info = date + ((location.length > 0) ? ", " + location : "");
+					info = date.replace(/(AM)/g, "am").replace(/(PM)/g, "pm").replace(/(:00)/g,"") + ((location.length > 0) ? ", " + location : "");
 				}
 				// Get notes and add event
 				var notes = object["notes"];
