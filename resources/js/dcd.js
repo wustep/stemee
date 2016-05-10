@@ -117,7 +117,6 @@ function addEvent(set, eventId, eventName, eventInfo, eventNotes) { // Add a new
 }
 
 $(function() {
-	$("#copy").button().button("disable");
 	$("#dcd-start").datepicker({
 	  defaultDate: "+1w",
 	  changeMonth: true,
@@ -144,11 +143,12 @@ $(function() {
 	$("#dcd-start").attr('value', nextMonday);
 	$("#dcd-end").attr('value', sundayAfter);
 
-	var startDate = $("#dcd-start").attr('value');
-	var endDate = $("#dcd-end").attr('value');
+	$("#copy").button().button("disable");
+	$("#reset").button().button("disable");
 	$("#submit").button().click(function() {
 		$("#submit").button("disable");
 		$("#copy").button("enable");
+		$("#reset").button("enable");
 		var startDate = $("#dcd-start").prop('value');
 		var endDate = $("#dcd-end").prop('value');
 		makeCorsRequest(
@@ -215,10 +215,9 @@ $(function() {
 							} else  { // Otherwise add it to the right index position
 								iframe.find("div." + setDestination + " span.info-event:nth-child(" + index + ")").after(iframe.find("span#" + movedEvent));
 							}
+							iframe.find("div." + setDestination).find(".counter").remove(); // Remove counter so non-counted sections will not show counts
 							
 							numberEvents();
-							console.log(event);
-							console.log(ui);
 						}
 					}).disableSelection();
 					numberEvents();
@@ -255,6 +254,9 @@ $(function() {
 		iframe.contentDocument.execCommand('copy');
 		alert("DCD copied to clipboard!\n\nIf that didn't work, use Ctrl+C or Command+C after pressing this button!")
 	});
+	$("#reset").button().click(function() {
+		eventReset.dialog("open");
+	});
 	
 	var eventAdd = $("#event-add-dialog").dialog({
 		modal: true,
@@ -277,7 +279,6 @@ $(function() {
 
     var eventDelete = $("#event-delete-dialog").dialog({
 		modal: true,
-		resizable: false,
 		autoOpen: false,
 		height: 300,
 		width: 600,
@@ -292,5 +293,20 @@ $(function() {
 				$(this).dialog("close");
 			}
 		}
+	});
+	
+	var eventReset = $("#reset-dialog").dialog({
+		modal: true,
+		autoOpen: false,
+		height: 220,
+		width: 400,	
+		buttons: {
+			"Reset": function() { // Delete SPANs and LIs corresponding to class "event-#"
+				location.reload();
+			},
+			Cancel: function() {
+				$(this).dialog("close");
+			}
+		}		
 	});
 });

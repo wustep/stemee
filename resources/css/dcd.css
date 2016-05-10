@@ -42,3 +42,11 @@ input#copy, input#submit {
 #event-delete-name {
   font-weight: bold;
 }
+#buttons input {
+  margin-right: 10px;
+}
+
+.icon-attn {
+	float: left; 
+	margin: 0 7px 20px 0;
+}
