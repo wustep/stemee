@@ -112,7 +112,7 @@ function addEvent(set, eventId, eventName, eventInfo, eventNotes) { // Add a new
 	$("iframe#output").contents().find("ul." + set).first().append("<li class='toc-event event-"+eventId+" ui-sortable-handle'>"+eventName+"</li>");
 	var info = (eventInfo.length > 0) ? "<br>" + eventInfo : "";
 	var notes = (eventNotes.length > 0) ? "<br><span class='info-event-notes'>"+eventNotes+"</span>" : "";
-	$("iframe#output").contents().find("div." + set).first().append("<span id='e-"+eventId+"' class='info-event event-"+eventId+"'><br><span class='info-event-desc'><span class='info-event-title "+set+"'>"+eventName+"</span>"+info+'</span>'+notes+"<br></span>");
+	$("iframe#output").contents().find("div." + set).first().append("<span id='event-"+eventId+"' class='info-event event-"+eventId+"'><br><span class='info-event-desc'><span class='info-event-title "+set+"'>"+eventName+"</span>"+info+'</span>'+notes+"<br></span>");
 	numberEvents();
 }
 
@@ -195,11 +195,30 @@ $(function() {
 							$sortIcon.addClass("event-drag-active");
 						},
 						stop: function(event, ui) {
+							// Fix icons 
 							$sortIcon.remove();
-							numberEvents();
 							$(ui["item"][0]).prepend($sortIcon); // Fix sort icon location
 							$sortIcon.removeClass("event-drag-active");
 							$(ui["item"][0]).append($deleteIcon); // Re-add delete icon
+							
+							// Give destination set class to change colors
+							var movedEvent = $(ui["item"][0]).attr("class").match(/event\-\w{1,}/)[0];
+							var movedEventTitleClass = iframe.find("span#" + movedEvent).find(".info-event-title").attr("class").match(/(cal|set)\-\w{1,}/)[0];
+							var setDestination = $(ui["item"][0]["parentElement"]).attr("class").match(/set\-\w{1,}/)[0];
+							iframe.find("span#" + movedEvent).find(".info-event-title").removeClass(movedEventTitleClass);
+							iframe.find("span#" + movedEvent).find(".info-event-title").addClass(setDestination);
+							
+							// Place event info element in correct new position
+							var index = $(ui["item"][0]).index();
+							if (index == 0) { // Prepend to div if it is now the first element
+								iframe.find("div." + setDestination).prepend(iframe.find("span#" + movedEvent));
+							} else  { // Otherwise add it to the right index position
+								iframe.find("div." + setDestination + " span.info-event:nth-child(" + index + ")").after(iframe.find("span#" + movedEvent));
+							}
+							
+							numberEvents();
+							console.log(event);
+							console.log(ui);
 						}
 					}).disableSelection();
 					numberEvents();
