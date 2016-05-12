@@ -1,0 +1,36 @@
+%% Martingale simulator — MATLAB — by Stephen Wu
+% Enter name, cash, initial bet, and target cash, then run the simulator!
+
+name = input('\n\nName: ', 's');
+cash = input('Cash: ');
+initialBet = input('Initial bet: ');
+stopAt = input('Stop at: ');
+
+odds = .4637; % Use roulette odds - 47% of winning
+timePerSpin = 66; % Seconds to make each bet & spin
+win = 0; loss = 0; worst = 0; % Keep track of statistics
+
+bet = initialBet;
+while (cash > bet && cash < stopAt) % Go until "stop At" or cannot make next bet
+    result = rand() > odds; % Generate result, 1 for win, 0 for loss
+    if (bet > worst) % Log greatest wager
+        worst = bet;
+    end   
+    if (result) % Loss
+        cash = cash - bet;
+        fprintf('L - Bet: %i - Cash: %i\n', bet, cash);
+        bet = bet * 2;
+        loss = loss + 1;
+    else % Win
+       cash = cash + bet;  
+       fprintf('W - Bet: %i - Cash: %i\n', bet, cash);
+       bet = initialBet;
+       win = win + 1;
+   end
+   pause(0.5);
+end
+
+fprintf('\nStopped playing. %s has $%i.\n', name, cash);
+fprintf('\nBets: %i (%iW-%iL) - Greatest Wager: $%i', win + loss, win, loss, worst); 
+time = fix(mod(timePerSpin*(win + loss), [0, 3600, 60]) ./ [3600, 60, 1]);
+fprintf('\nWin ratio: %.3f\nTime spent: %i hours, %i minutes, %i seconds\n', win / (win + loss), time(1), time(2), time(3));

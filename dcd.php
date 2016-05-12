@@ -8,9 +8,12 @@
 </head>
 <body>
 	<h1>DCD Generator</h1>
-	Date: <input type="text" id="dcd-start"> to 
-	<input type="text" id="dcd-end"><br><br>
-	<div id="buttons"><input type="button" id="submit" value="Submit"><input type="button" id="copy" value="Copy"/><input type="button" id="reset" value="Reset"/></div><br><br>
+	Date: <input type="text" id="dcd-start"> to <input type="text" id="dcd-end"><br><br>
+	<div id="buttons">
+		<input type="button" id="submit" value="Submit">
+		<input type="button" id="copy" value="Copy"/>
+		<input type="button" id="reset" value="Reset"/>
+	</div><br><br>
 	<div id="data" class="fluid" style="display:none">
 		<iframe id="output">
 		</iframe>

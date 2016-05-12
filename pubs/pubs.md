@@ -1,0 +1,2 @@
+# 12 April 2016 - [Media, Sports, Gambling, and Life through Statistics](https://docs.google.com/presentation/d/1MLgvidd40I_sVvfJEZ1cn4xUmIJZdG_CbElYNZWDEno/pub?start=false&loop=false&delayms=15000&slide=id.p)  
+Discussion of applications of statistics in various fields by Stephen Wu and Matt Smerglia
