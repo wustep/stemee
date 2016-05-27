@@ -8,5 +8,7 @@ Add, sort, and delete events by hovering over the Table of Contents
 
 Uses the [Teamup API](http://apidocs.teamup.com/) and [jQueryUI](https://jqueryui.com/)
 
+![DCD generator](http://wustep.me/img/portfolio/dcd.png "dcd")  
+
 # /pubs/
 Publications made for the Scholars group
