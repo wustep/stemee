@@ -112,7 +112,7 @@ function getNewEventId() { // Get an unused event ID
 function addEvent(set, eventId, eventName, eventInfo, eventNotes) { // Populate <ul>s and <div>s with corresponding <li>s and <span>s according to the right sets of events
 	$("iframe#output").contents().find("ul." + set).first().append("<li class='toc-event event-"+eventId+" ui-sortable-handle'>"+eventName+"</li>");
 	var info = (eventInfo.length > 0) ? "<br>" + eventInfo : "";
-	var notes = (eventNotes.length > 0) ? "<br><span class='info-event-notes'>"+eventNotes+"</span>" : "";
+	var notes = (eventNotes && eventNotes.length > 0) ? "<br><span class='info-event-notes'>"+eventNotes+"</span>" : "";
 	$("iframe#output").contents().find("div." + set).first().append("<span id='event-"+eventId+"' class='info-event event-"+eventId+"'><br><span class='info-event-desc'><span class='info-event-title "+set+"'>"+eventName+"</span>"+info+'</span>'+notes+"<br></span>");
 	numberEvents();
 }
@@ -138,12 +138,11 @@ $(function() {
 	});
 	
 	// Set pre-established week 4-11 to 4-17 for now until next year
-	var nextMonday = Date.parse("2016-04-11").toString("yyyy-MM-dd");
-	var sundayAfter = Date.parse("2016-04-17").toString("yyyy-MM-dd");
-	/* Populate inputs with next week Mon--Sun
+	// var nextMonday = Date.parse("2016-04-11").toString("yyyy-MM-dd");
+	// var sundayAfter = Date.parse("2016-04-17").toString("yyyy-MM-dd");
+	/* Populate inputs with next week Mon--Sun */
 	var nextMonday =  Date.today().next().monday().toString("yyyy-MM-dd");
 	var sundayAfter = Date.today().next().monday().add(6).day().toString("yyyy-MM-dd");
-	*/	
 	$("#dcd-start").attr('value', nextMonday);
 	$("#dcd-end").attr('value', sundayAfter);
 
