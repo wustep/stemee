@@ -141,8 +141,8 @@ $(function() {
 	// var nextMonday = Date.parse("2016-04-11").toString("yyyy-MM-dd");
 	// var sundayAfter = Date.parse("2016-04-17").toString("yyyy-MM-dd");
 	/* Populate inputs with next week Mon--Sun */
-	var nextMonday =  Date.today().next().monday().toString("yyyy-MM-dd");
-	var sundayAfter = Date.today().next().monday().add(6).day().toString("yyyy-MM-dd");
+	var nextMonday =  Date.today().toString("yyyy-MM-dd");
+	var sundayAfter = Date.today().add(7).day().toString("yyyy-MM-dd");
 	$("#dcd-start").attr('value', nextMonday);
 	$("#dcd-end").attr('value', sundayAfter);
 
@@ -312,7 +312,7 @@ $(function() {
 		modal: true,
 		autoOpen: false,
 		height: 230,
-		width: 400,	
+		width: 420,	
 		buttons: {
 			"Reset": function() {
 				location.reload();
