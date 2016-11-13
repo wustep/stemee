@@ -111,7 +111,7 @@ function getNewEventId() { // Get an unused event ID
 
 function addEvent(set, eventId, eventName, eventInfo, eventNotes) { // Populate <ul>s and <div>s with corresponding <li>s and <span>s according to the right sets of events
 	$("iframe#output").contents().find("ul." + set).first().append("<li class='toc-event event-"+eventId+" ui-sortable-handle'>"+eventName+"</li>");
-	var info = (eventInfo.length > 0) ? "<br>" + eventInfo : "";
+	var info = (!$("iframe#output").contents().find("div." + set).hasClass("no-info") && eventInfo.length > 0) ? "<br>" + eventInfo : ""; // If div has no-info class, then don't add location and date
 	var notes = (eventNotes && eventNotes.length > 0) ? "<br><span class='info-event-notes'>"+eventNotes+"</span>" : "";
 	$("iframe#output").contents().find("div." + set).first().append("<span id='event-"+eventId+"' class='info-event event-"+eventId+"'><br><span class='info-event-desc'><span class='info-event-title "+set+"'>"+eventName+"</span>"+info+'</span>'+notes+"<br></span>");
 	numberEvents();
