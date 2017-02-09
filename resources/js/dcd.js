@@ -158,7 +158,7 @@ $(function() {
 		
 		var startDate = $("#dcd-start").prop('value');
 		var endDate = $("#dcd-end").prop('value');
-		makeCorsRequest('https://api.teamup.com/kse89a84dcb543ed5e/events?startDate='+startDate+'&endDate='+endDate,
+		makeCorsRequest('https://api.teamup.com/ksbde4a1fb106e963c/events?startDate='+startDate+'&endDate='+endDate,
 			function(xhr) { // Success on making API request
 				var data = JSON.parse(xhr.responseText);
 				$('#data').show();
