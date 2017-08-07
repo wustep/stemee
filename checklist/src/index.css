@@ -3,6 +3,9 @@ body {
   padding: 0;
   font-family: sans-serif;
 }
+.err {
+  color: red;
+}
 
 /* UserSelect and ListSelect buttons */
 .Select-btn, .Select-in {
@@ -10,9 +13,6 @@ body {
   max-width: 95%;
 	margin: 0 0 10px 0;
 	height: 30px;
-}
-.Select-err {
-  color: red;
 }
 .Select-in::-webkit-outer-spin-button,
 .Select-in::-webkit-inner-spin-button { /* Hide spin button on OSU ID input */

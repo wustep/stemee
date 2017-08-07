@@ -43,7 +43,7 @@ export default class UserSelect extends Component {
 				<br />
 
 				<CSSTransitionGroup transitionName="reactFade" transitionEnterTimeout={500} transitionLeaveTimeout={300}>
-					<span key="err" className='Select-err'>{this.state.error}</span>
+					<span key="err" className='err'>{this.state.error}</span>
 				</CSSTransitionGroup>
 			</div>
 		);
