@@ -1,0 +1,28 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: sans-serif;
+}
+
+.ListSelect, .UserSelect {
+  width: 500px;
+  max-width: 95%;
+	margin: 0 0 10px 0;
+	height: 30px;
+}
+
+# React-Transition-Group Fade
+.reactFade-enter {
+  opacity: 0.01;
+}
+.reactFade-enter.reactFade-enter-active {
+  opacity: 1;
+  transition: opacity 500ms ease-in;
+}
+.reactFade-leave {
+  opacity: 1;
+}
+.reactFade-leave.reactFade-leave-active {
+  opacity: 0.01;
+  transition: opacity 300ms ease-in;
+}
