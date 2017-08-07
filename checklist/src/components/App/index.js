@@ -7,11 +7,14 @@ export default class App extends Component {
   render() {
     return (
       <div className="App">
-        <div className="App-header">
+        <header className="App-header">
           <a href='/'><img src={logo} className="App-logo" alt="logo" /></a>
           <h2>STEM EE Checklist</h2>
-        </div>
+        </header>
         {this.props.children}
+        <footer className="App-footer">
+          <p>About ⬩ Contact</p>
+        </footer>
       </div>
     );
   }

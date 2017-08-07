@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { CSSTransitionGroup } from 'react-transition-group';
 import { withRouter } from 'react-router';
+import { CSSTransitionGroup } from 'react-transition-group';
 
 let listOptions = [{ value: 'stemee-1-2017', label: '1st Year STEM EE Scholar 2017-18'},
 				           { value: 'stemee-2-2017', label: '2nd Year STEM EE Scholar 2017-18'}];
