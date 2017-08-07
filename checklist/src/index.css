@@ -4,25 +4,35 @@ body {
   font-family: sans-serif;
 }
 
-.ListSelect, .UserSelect {
+/* UserSelect and ListSelect buttons */
+.Select-btn, .Select-in {
   width: 500px;
   max-width: 95%;
 	margin: 0 0 10px 0;
 	height: 30px;
 }
+.Select-err {
+  color: red;
+}
+.Select-in::-webkit-outer-spin-button,
+.Select-in::-webkit-inner-spin-button { /* Hide spin button on OSU ID input */
+    -webkit-appearance: none;
+    margin: 0;
+}
 
-# React-Transition-Group Fade
+/* CSSTransitionGroup Fade */
+
 .reactFade-enter {
   opacity: 0.01;
 }
-.reactFade-enter.reactFade-enter-active {
+.reactFade-enter .reactFade-enter-active {
   opacity: 1;
   transition: opacity 500ms ease-in;
 }
 .reactFade-leave {
   opacity: 1;
 }
-.reactFade-leave.reactFade-leave-active {
+.reactFade-leave .reactFade-leave-active {
   opacity: 0.01;
   transition: opacity 300ms ease-in;
 }

@@ -1,9 +1,6 @@
 import React, { Component } from 'react';
 import { CSSTransitionGroup } from 'react-transition-group';
 
-let errorStyle = {color: "red", marginLeft: "5px"};
-let listOptions = [{ value: 'stemee-1-2017', label: '1st Year STEM EE Scholar 2017-18'},
-				   { value: 'stemee-2-2017', label: '2nd Year STEM EE Scholar 2017-18'}];
 let validOSUIDs = ["500039356"];
 
 export default class UserSelect extends Component {
@@ -32,19 +29,21 @@ export default class UserSelect extends Component {
 				<p>Login below to track your STEM EE Scholars program requirements!</p>
 
 				<input name='osuID'
+							 className="Select-in"
+							 type="number"
 					  	 placeholder='OSU ID (e.g. 500023231)'
-			     	   className="ListSelect"
 			     	   value={this.state.osuID}
+							 pattern="[0-9]"
 			     	   onChange={this.handleInputChange.bind(this)}/>
 				<br />
 
-				<button className="ListSelect" onClick={this.handleSubmit.bind(this)}>
+				<button className="Select-btn" onClick={this.handleSubmit.bind(this)}>
 								Submit
 			  </button>
 				<br />
 
 				<CSSTransitionGroup transitionName="reactFade" transitionEnterTimeout={500} transitionLeaveTimeout={300}>
-					<span key="err" style={errorStyle}>{this.state.error}</span>
+					<span key="err" className='Select-err'>{this.state.error}</span>
 				</CSSTransitionGroup>
 			</div>
 		);
