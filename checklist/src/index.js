@@ -19,7 +19,7 @@ ReactDOM.render(
         <Route exact path="/user/:user" component={ListSelect} />
         <Route exact path="/user/:user/list/:list" component={List} />
         <Route exact path="/" component={UserSelect} />
-        <Route path="*" component={NotFound} />
+        <Route path="*" component={NotFound} status={404} />
       </Switch>
     </App>
   </BrowserRouter>,
