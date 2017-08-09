@@ -19,14 +19,14 @@ With node & npm installed, run 'npm build' and then 'npm start' for production o
 Full commands list ("npm run [command]")
 ```
 go: build & start for production
-build: builds server & client files to /build/ and /server/ for production
-start: starts server file found in /server/ and serves /build/ for production
-start-test: starts server file found in /api/ and serves /build/ for testing production
+build: builds and serves client and server files for production
+start: serves built client and server files for production
+start-test: serves built client and starts server for development with nodemon
 
-server: starts server for development
-client: starts client for development
-server-build: builds client for production
-client-build: builds client for production
+server: starts server for development with nodemon
+client: starts client for development with webpack-dev-server
+server-build: builds client for production to /server/
+client-build: builds client for production to /build/
 
 client-test: runs react testing script
 client-eject: runs react eject script
