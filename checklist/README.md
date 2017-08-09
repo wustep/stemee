@@ -10,8 +10,8 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 Create .env file with the following variables (without comments):
 ```
-PORT=3000			# Port to use for client & server in production, or just client in development
-SERVER_PORT=3000	# Port to use for server in development
+PORT=3000           # Port to use for client & server in production, or just client in development
+SERVER_PORT=3000    # Port to use for server in development
 ```
 
 With node & npm installed, run 'npm build' and then 'npm start' for production or 'npm run server' and 'npm run client' separately for development.
