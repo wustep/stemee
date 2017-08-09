@@ -1,6 +1,6 @@
 # Checklist
 
-This app was built by Stephen Wu (@wustep) to facilitate program requirements for the [STEM Exploration & Engagement Scholars Program](https://u.osu.edu/stemeescholars/). Checklist uses Google Spreadsheets to read and store program requirements and progress for users in any organization.
+This app was built by Stephen Wu to facilitate program requirements for the [STEM Exploration & Engagement Scholars Program](https://u.osu.edu/stemeescholars/). Checklist uses Google Spreadsheets to read and store program requirements and progress for users in any organization.
 
 ## Tech
 
@@ -15,6 +15,22 @@ SERVER_PORT=3000	# Port to use for server in development
 ```
 
 Run 'npm build' and then 'npm start' for production or 'npm run server' and 'npm run client' separately for development.
+
+Full commands list ("npm run [command]")
+```
+go: build & start for production
+build: builds server & client files to /build/ and /server/ for production
+start: starts server file found in /server/ and serves /build/ for production
+start-test: starts server file found in /api/ and serves /build/ for testing production
+
+server: starts server for development
+client: starts client for development
+server-build: builds client for production
+client-build: builds client for production
+
+client-test: runs react testing script
+client-eject: runs react eject script
+```
 
 ## Contact
 
