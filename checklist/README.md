@@ -14,7 +14,7 @@ PORT=3000			# Port to use for client & server in production, or just client in d
 SERVER_PORT=3000	# Port to use for server in development
 ```
 
-Run 'npm build' and then 'npm start' for production or 'npm run server' and 'npm run client' separately for development.
+With node & npm installed, run 'npm build' and then 'npm start' for production or 'npm run server' and 'npm run client' separately for development.
 
 Full commands list ("npm run [command]")
 ```
@@ -34,10 +34,5 @@ client-eject: runs react eject script
 
 ## Contact
 
-Stephen Wu
-STEM EE Scholars Consultant
-wu.2719@osu.edu
-
-Jorge Eduardo Mendoza
-STEM EE Scholars Coordinator
-mendoza.773@osu.edu
+- Stephen Wu - STEM EE Scholars Consultant - wu.2719@osu.edu
+- Jorge Eduardo Mendoza - STEM EE Scholars Coordinator - mendoza.773@osu.edu
