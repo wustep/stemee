@@ -24,10 +24,10 @@
 	"start-test": "set NODE_ENV=production&& nodemon ./api/index.js --exec babel-node",
     "go": "npm run build && npm run start",
     "server": "set NODE_ENV=development&& nodemon ./api/index.js --exec babel-node",
+    "server-build": "babel api -d server",
     "client": "react-scripts start",
     "client-build": "react-scripts build",
     "client-test": "react-scripts test --env=jsdom",
-    "client-eject": "react-scripts eject"
   },
   "babel": {
     "presets": [
