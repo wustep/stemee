@@ -27,9 +27,7 @@ server: starts server for development with nodemon
 client: starts client for development with webpack-dev-server
 server-build: builds client for production to /server/
 client-build: builds client for production to /build/
-
 client-test: runs react testing script
-client-eject: runs react eject script
 ```
 
 ## Contact
