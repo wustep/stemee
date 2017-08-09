@@ -6,9 +6,19 @@ This app was built by Stephen Wu (@wustep) to facilitate program requirements fo
 
 This project was bootstrapped with [Create React App](https://github.com/facebookincubator/create-react-app). Checklist was written in NodeJS, using React and other packages and the [Google Spreadsheets v4 API](https://developers.google.com/sheets/api/).
 
+## Usage
+
+Create .env file with the following variables (without comments):
+```
+PORT=3000			# Port to use for client & server in production, or just client in development
+SERVER_PORT=3000	# Port to use for server in development
+```
+
+Run 'npm build' and then 'npm start' for production or 'npm run server' and 'npm run client' separately for development.
+
 ## Contact
 
-Stephen Wu 
+Stephen Wu
 STEM EE Scholars Consultant
 wu.2719@osu.edu
 
