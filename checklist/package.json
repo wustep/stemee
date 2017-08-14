@@ -27,7 +27,7 @@
     "server-build": "babel api -d server",
     "client": "react-scripts start",
     "client-build": "react-scripts build",
-    "client-test": "react-scripts test --env=jsdom",
+    "client-test": "react-scripts test --env=jsdom"
   },
   "babel": {
     "presets": [

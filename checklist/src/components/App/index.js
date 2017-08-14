@@ -13,7 +13,7 @@ export default class App extends Component {
         </header>
         {this.props.children}
         <footer className="App-footer">
-          <p>About ⬩ Contact</p>
+          <p><a href='http://github.com/wustep/stemee/tree/master/checklist/README.md'>About ⬩ Contact</a></p>
         </footer>
       </div>
     );

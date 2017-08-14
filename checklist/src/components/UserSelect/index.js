@@ -30,10 +30,8 @@ export default class UserSelect extends Component {
 
 				<input name='osuID'
 							 className="Select-in"
-							 type="number"
 					  	 placeholder='OSU ID (e.g. 500023231)'
 			     	   value={this.state.osuID}
-							 pattern="[0-9]"
 			     	   onChange={this.handleInputChange.bind(this)}/>
 				<br />
 

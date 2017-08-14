@@ -30,6 +30,8 @@ client-build: builds client for production to /build/
 client-test: runs react testing script
 ```
 
+See API.md for more info on API routes.
+
 ## Contact
 
 - Stephen Wu - STEM EE Scholars Consultant - wu.2719@osu.edu
