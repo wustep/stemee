@@ -44,15 +44,15 @@ Sample response:
         "Name": "Seminar"
         "ID": 1
         "Description": ""
-        "Min Pts": 20
-        "Max Pts": 20
+        "Min_Pts": 20
+        "Max_Pts": 20
         "Items: " {
           (0) {
             "ID": 1
             "Name": "Complete Seminar"
             "Min": 1
             "Max": 1
-            "Pts Per": 20
+            "Pts_Per": 20
           }
           ....
         }
@@ -60,7 +60,7 @@ Sample response:
       (2) {
         "Name": "Events"
         "Description": "Must log on Event Logging Form"
-        "Min Pts": 32
+        "Min_Pts": 32
       }
       ...
 
@@ -83,9 +83,9 @@ Returns user ID, name, type, and lists in order of spreadsheet list
 Sample response:
 ```
 {
-  "ID": 121123123
+  "ID": 1
   "Name": "Stephen Wu"
-  "User Type": 0
+  "User_Type": 0
   "Lists": {
     (0) {
       "Name": "First Year Requirements (2017-18)"
@@ -110,3 +110,23 @@ Sample error:
 ### GET /user/#/list/#
 
 Sample response:
+```
+{
+  "ID": 1
+  "Name": "Stephen Wu"
+  "Entries": {
+    {
+      "ID": 1
+      "Qty": 10
+    }
+  }
+  "Approved_Entries": {
+    {
+      "ID": 3
+      "Qty": 12
+    }
+  }
+}
+```
+
+Only the bottom-most entry of the same ID will be used. So if for the same user, there exists 2 submissions, "ID:1, Qty:3" and then a later one, "ID:1,Qty:5", the result should be "ID:1,Qty:5"

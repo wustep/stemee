@@ -22,6 +22,7 @@ class ListSelect extends Component {
         <div>
           <p>Select the applicable list below.</p>
           <p>User ID: { this.props.match.params.user }</p>
+					<p>Name: Stephen Wu</p>
 
           <select name="listDropdown"
                   className="Select-in"
