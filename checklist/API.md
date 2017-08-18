@@ -77,6 +77,8 @@ Sample error:
 }
 ```
 
+Will return "null" for Group IDs without lists inbetween 0 and the max Group ID.
+
 ### GET /user/#/
 Returns user ID, name, type, and lists in order of spreadsheet list
 
