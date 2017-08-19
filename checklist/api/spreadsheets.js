@@ -118,7 +118,7 @@ function getSheet(auth, sheet, callback) {
       console.log('No data found.');
       callback("Error");
     } else {
-      console.log("Server: Sent " + sheet + " to client with " + rows.length + " rows");
+      console.log("Server: Sent `" + sheet + "` with " + rows.length + " rows");
       callback(rows);
     }
   });
