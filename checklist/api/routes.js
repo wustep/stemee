@@ -7,16 +7,16 @@ let cache = apicache.middleware;
 
 // TODO: Better error handling
 
-var types = []; // Types and list availability. types[i] returns array of available list IDs
 var lists = []; // Lists array. lists[i] returns name of list
+var listTypes = []; // Types and list availability. types[i] returns array of available list IDs
 
 spreadsheet("Types_Lists", (data) => { // Populate type / list map
   for (let i = 1; i < data.length; i++) {
     if (!isNaN(data[i][0])) { // Must be number validation
-      types[data[i][0]] = [];
+      listTypes[data[i][0]] = [];
       for (let j = 1; j < data[i].length; j++) {
         if (data[i][j] === "TRUE") {
-          types[data[i][0]].push(j);
+          listTypes[data[i][0]].push(j);
         }
       }
     } else {
@@ -24,7 +24,7 @@ spreadsheet("Types_Lists", (data) => { // Populate type / list map
     }
   }
   console.log("Types_Lists loaded:");
-  console.log(types);
+  console.log(listTypes);
 });
 
 spreadsheet("Lists", (data) => { // Populate list / id map
@@ -53,22 +53,22 @@ routes.get('/list', cache('1 day'), (req, res) => { // Unused for now
 });
 
 routes.get('/list/:listid', cache('1 day'), (req, res) => {
-  var result = [];
-  var {listid} = req.params;
-  var listFound = false;
   spreadsheet("Lists", (data) => {
-      console.log(data);
-      for (let i = 1; i < data.length; i++) {
-       if (data[i].length < 2) {
-         console.log("Error: Lists call returned " + data[i].length + " columns, expected >=2");
-         res.status(500).send("Server error");
-         return;
-       }
-       if (data[i][0] == listid) {
-         listFound = true;
-         result.push({"ID": data[i][0], "Name": data[i][1]});
-       }
+    var result = [];
+    var {listid} = req.params;
+    var listFound = false;
+    console.log(data);
+    for (let i = 1; i < data.length; i++) {
+     if (data[i].length < 2) {
+       console.log("Error: Lists call returned " + data[i].length + " columns, expected >=2");
+       res.status(500).send("Server error");
+       return;
      }
+     if (data[i][0] == listid) {
+       listFound = true;
+       result.push({"ID": data[i][0], "Name": data[i][1]});
+     }
+    }
      if (listFound) {
        var listFoundInGroups = false;
        var groups = [];
@@ -102,21 +102,24 @@ routes.get('/user/:userid', cache('1 day'), (req, res) => {
   spreadsheet("Users", (data) => {
      let userFound = false;
      let result = [];
-     let userID = 0;
+     let {userid} = req.params;
      for (let i = 1; i < data.length; i++) {
        if (data[i].length < 3) {
          console.log("Error: Lists call returned " + data[i].legnth + " columns, expected >=3");
          res.status(500).send("Server error");
          return;
        }
-       if (data[i][0] == listid) {
-         userID = data[i][0];
+       if (data[i][0] == userid) {
          userFound = true;
-         user.push({"ID": data[i][0], "Name": data[i][1], "Type": data[i][2]});
+         result.push({"ID": data[i][0], "Name": data[i][1], "Type": data[i][2], "Lists": listTypes[data[i][2]]});
          break;
        }
      }
-     res.status(200).send(result);
+     if (userFound) {
+       res.status(200).send(result);
+     } else {
+       res.status(400).send("Bad request - User not found");
+     }
    });
 });
 
