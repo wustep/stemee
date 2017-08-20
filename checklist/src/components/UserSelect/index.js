@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { CSSTransitionGroup } from 'react-transition-group';
 import { withRouter } from 'react-router-dom';
 
-let validOSUIDs = ["500039356"];
 var apiURL = (process.env.NODE_ENV === 'production') ? process.env.REACT_APP_API_PROD : process.env.REACT_APP_API_DEV; // TODO: This is a temp solution for distinguishing API urls
 
 class UserSelect extends Component {
@@ -14,23 +13,16 @@ class UserSelect extends Component {
 		this.setState({[e.target.name] : e.target.value});
 	}
 	handleSubmit() {
-		fetch(apiURL + "/user/" + this.state.osuID).then((res) => res.json())
+		fetch(apiURL + "/user/" + this.state.osuID)
+		.then((res) => { // TODO: Improve this error formatting
+			if (!res.ok) throw Error("Invalid User ID");
+			return res.json();
+		})
 		.then((data) => {
-			console.log("Yay!");
-			console.log(data);
 			this.props.history.push("/user/" + this.state.osuID)
-		}).catch(() => {
-			this.setState({error : 'Error: ID was not found.'});
+		}).catch((err) => {
+			this.setState({error : err.toString()});
 		});
-
-		if (this.state.osuID.length === 9) {
-			if (validOSUIDs.indexOf(this.state.osuID) !== -1) {
-				console.log("Yay!");
-				this.setState({error : ''})
-			} else {
-				this.setState({error : 'Error: ID was not found.'});
-			}
-		}
 	}
 	render() {
 		return (
