@@ -5,7 +5,16 @@ import spreadsheet from './spreadsheets';
 const routes = express.Router();
 let cache = apicache.middleware;
 
-// TODO: Better error handling
+// Make sure CORS isnt blocked for API calls from client
+routes.use((req, res, next) => { // TODO: Not sure if this is good practice?
+	const origin = process.env.NODE_ENV === 'production' ? process.env.REACT_APP_URL_PROD : process.env.REACT_APP_URL_DEV;
+	res.header("Access-Control-Allow-Origin", origin);
+	res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+	res.header('Access-Control-Allow-Methods', 'GET');
+	res.header("Access-Control-Allow-Credentials", "true")
+  console.log(origin);
+	next();
+});
 
 var lists = []; // Lists array. lists[i] returns name of list
 var listTypes = []; // Types and list availability. types[i] returns array of available list IDs
@@ -93,7 +102,7 @@ routes.get('/list/:listid', cache('1 day'), (req, res) => {
         });
         return;
      } else {
-       res.status(400).send("Bad request - List not found");
+       res.status(400).send({"error": "Bad request - List not found"});
      }
    });
 });
@@ -118,7 +127,7 @@ routes.get('/user/:userid', cache('1 day'), (req, res) => {
      if (userFound) {
        res.status(200).send(result);
      } else {
-       res.status(400).send("Bad request - User not found");
+       res.status(400).send({"error": "Bad request - User not found"});
      }
    });
 });
