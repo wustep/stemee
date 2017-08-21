@@ -2,33 +2,65 @@ import React, { Component } from 'react';
 import { withRouter } from 'react-router';
 import { CSSTransitionGroup } from 'react-transition-group';
 
-let listOptions = [{ value: 'stemee-1-2017', label: '1st Year STEM EE Scholar 2017-18'},
-				           { value: 'stemee-2-2017', label: '2nd Year STEM EE Scholar 2017-18'}];
+var apiURL = (process.env.NODE_ENV === 'production') ? process.env.REACT_APP_API_PROD : process.env.REACT_APP_API_DEV; // TODO: This is a temp solution for distinguishing API urls
+
+var lists = [];
+
+fetch(apiURL + "/list").then((res) => res.json())
+.then((data) => {
+	for (let i = 0; i < data.length; i++) {
+		lists[data[i]["ID"]] = data[i]["Name"];
+	}
+});
 
 class ListSelect extends Component {
   constructor(props) {
     super(props);
-    this.state = { list: listOptions[listOptions.length - 1].value } // Get the last option from listOptions
+		this.state = { error: false, data: null, listDropdown: null };
   }
-  handleInputChange() {
-
+	componentDidMount() {
+		fetch(apiURL + "/user/" + this.props.match.params.user)
+		.then((res) => { // TODO: Improve this error formatting
+			if (!res.ok) {
+				throw new Error("Error fetching User ID!");
+			}
+			return res.json();
+		})
+		.then((data) => {
+			if (data[0]["Lists"].length === 1) { // If only one list available, go to that list
+				this.props.history.push("/user/" + this.props.match.params.user + "/lists/" + data[0]["Lists"][0]);
+			}
+			this.setState({data: data[0], listDropdown: data[0]["Lists"][0]});
+		}).catch((err) => {
+			this.setState({error: err.toString()});
+		});
+	}
+  handleInputChange(e) {
+		this.setState({[e.target.name] : e.target.value});
   }
   handleSubmit() {
-
+		this.props.history.push("/user/" + this.props.match.params.user + "/list/" + this.state.listDropdown);
   }
   render() {
-    if (this.props.match.params.user !== undefined && this.props.match.params.user.length === 9) {
-      return (
+		if (this.state.error) {
+			setTimeout(() => { this.props.history.push("/") }, 4500);
+			return (
+				<div className='err'>
+					<p>{this.state.error} Redirecting you now...</p>
+				</div>
+			);
+		} else if (this.state.data) {
+			return (
         <div>
           <p>Select the applicable list below.</p>
-          <p>User ID: { this.props.match.params.user }</p>
-					<p>Name: Stephen Wu</p>
+          <p>User ID: { this.state.data["ID"] }</p>
+					<p>Name: { this.state.data["Name"] }</p>
 
           <select name="listDropdown"
                   className="Select-in"
            				value={this.state.listDropdown}
            				onChange={this.handleInputChange.bind(this)}>
-                  {listOptions.map(item => <option key={item.value} value={item.value}>{item.label}</option>)}
+                  {this.state.data["Lists"].map(item => <option key={item} value={item}>{(lists.length >= item) ? lists[item] : item}</option>)}
           </select>
           <br/>
 
@@ -39,15 +71,9 @@ class ListSelect extends Component {
           </CSSTransitionGroup>
         </div>
       )
-    } else {
-      setTimeout(() => { this.props.history.push("/") }, 4500);
-      return (
-        <div className='err'>
-          <p>Error: Invalid user ID. Redirecting you back now...</p>
-        </div>
-      )
-    }
+		}
+		return (<div className='err'><p>Loading...</p></div>);
   }
 }
 
-export default withRouter(ListSelect)
+export default withRouter(ListSelect);
