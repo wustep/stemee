@@ -20,7 +20,7 @@ class Item extends Component {
     return (
       <li className='Item'>
         <span className={'Item-name' + (this.props.itemTooltip ? ' Item-tooltip' : '')} data-tooltip={this.props.itemTooltip}>{this.props.itemName}</span>
-        <span className='Item-pts'>[<CompletedQty itemCompletedQty={this.props.itemCompletedQty} itemMaxQty={this.props.itemMaxQty} /> / <RequiredTotal requiredQty={this.props.itemRequiredQty} maxQty={this.props.itemRequiredMax} />] ({this.props.itemPtsPer})</span>
+        <span className='Item-pts'>[<CompletedQty itemCompletedQty={this.props.itemCompletedQty} itemMaxQty={this.props.itemMaxQty} /> / <RequiredTotal requiredQty={this.props.itemRequiredQty} maxQty={this.props.itemMaxQty} />] ({this.props.itemPtsPer})</span>
       </li>
     )
   }
@@ -29,7 +29,7 @@ class Item extends Component {
 // Min is currently set to always be 0. This is probably always the case, that the minimum a person has done for an entry is 0, but this may change in the future.
 class CompletedQty extends Component { /* Used only for Items */
   render() {
-      if (this.props.itemCompletedQty && isNaN(this.props.itemCompletedQty)) { // In the case of the example group, we just return the text instead of the input
+      if (this.props.itemMaxQty && isNaN(this.props.itemCompletedQty)) { // In the case of the example group, we just return the text instead of the input
         return (
           <span>{this.props.itemCompletedQty}</span>
         );
@@ -61,7 +61,7 @@ class RequiredTotal extends Component { /* Used for both Items and Groups to sim
 export default class List extends Component {
   constructor(props) {
     super(props);
-    this.state = { error: false, data: null };
+    this.state = { error: false, data: null, user: null };
   }
   componentDidMount() {
     fetch(apiURL + "/list/" + this.props.match.params.list)
@@ -72,9 +72,22 @@ export default class List extends Component {
       return res.json();
     })
     .then((data) => {
-      console.log(data);
       this.setState({data: data[0]});
     }).catch((err) => {
+      this.setState({error: err.toString()});
+    });
+
+    fetch(apiURL + "/user/" + this.props.match.params.user) // TODO: Get /user/list, but also minimize API calls
+    .then((res) => {
+      if (!res.ok) {
+        throw new Error("Error fetching User ID!");
+      }
+      return res.json();
+    })
+    .then((data) => {
+      this.setState({user: data[0]});
+    })
+    .catch((err) => {
       this.setState({error: err.toString()});
     });
   }
@@ -87,11 +100,10 @@ export default class List extends Component {
         </div>
       );
     } else if (this.state.data) {
-      console.log(this.state.data);
       return (
         <div>
           <h3>{ this.state.data["Name"] }</h3>
-          <p>Name: [[NAME HERE]]</p>
+          { (this.state.user !== null ) ? (<p>Name: {this.state.user["Name"]}</p>) : (<p></p>) }
           <Group groupName='Group Name' groupCurrentPts='Current Points' groupRequiredPts='Required Points'>
             <Item itemName='Item Name' itemCompletedQty='Completed Qty' itemRequiredQty='Required Qty' itemPtsPer='Pts Per'/>
           </Group>
@@ -99,10 +111,10 @@ export default class List extends Component {
           {this.state.data["Groups"].map((group) => {
             if (group !== null) {
               return (
-                <Group key={ group["ID"] } groupName={ group["Name"] } groupCurrentPts={ 0 } groupRequiredPts={ group["Min_Pts"] } groupMaxPts={ group["Max_Pts"] }>
+                <Group key={group["ID"] } groupName={ group["Name"] } groupCurrentPts='0' groupRequiredPts={ group["Min_Pts"] } groupMaxPts={ group["Max_Pts"] }>
                   {group["Items"].map((item) => {
                     return (
-                      <Item itemName={item["Name"]} itemCompletedQty='0' itemRequiredQty={item["Min"]} itemMax={item["Max"]} itemTooltip={item["Description"]} itemPtsPer={item["Pts_Per"]} />
+                      <Item key={item["ID"]} itemName={item["Name"]} itemCompletedQty='0' itemRequiredQty={item["Min"]} itemMaxQty={item["Max"]} itemTooltip={item["Description"]} itemPtsPer={item["Pts_Per"]} />
                     );
                   })}
                 </Group>

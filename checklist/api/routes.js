@@ -92,10 +92,10 @@ routes.get('/list/:listid', cache('1 day'), (req, res) => {
               if (data[j][0] == listid) {
                 let groupID = data[j][1];
                 listFoundInGroups = true;
-                groups[groupID] = {"ID": groupID, "Name": data[j][2], "Description": data[j][3], "Min_Pts": data[j][4], "Max_Pts:": data[j][5], "Items": []};
+                groups[groupID] = {"ID": groupID, "Name": data[j][2], "Description": data[j][3], "Min_Pts": data[j][4], "Max_Pts": data[j][5], "Items": []};
                 for (let k = 1; k < items.length; k++) {
                   if (items[k][0] === listid && items[k][2] === groupID) {
-                    groups[groupID]["Items"].push({"ID": items[k][2], "Name": items[k][3], "Description": items[k][4], "Min": items[k][5], "Max": items[k][6], "Pts_Per": items[k][7]})
+                    groups[groupID]["Items"].push({"ID": items[k][1], "Name": items[k][3], "Description": items[k][4], "Min": items[k][5], "Max": items[k][6], "Pts_Per": items[k][7]})
                   }
                 }
               } else if (listFoundInGroups) {
