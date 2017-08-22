@@ -28,7 +28,7 @@ class ListSelect extends Component {
 		})
 		.then((data) => {
 			if (data[0]["Lists"].length === 1) { // If only one list available, go to that list
-				this.props.history.push("/user/" + this.props.match.params.user + "/lists/" + data[0]["Lists"][0]);
+				this.props.history.push("/user/" + this.props.match.params.user + "/list/" + data[0]["Lists"][0]);
 			}
 			this.setState({data: data[0], listDropdown: data[0]["Lists"][0]});
 		}).catch((err) => {

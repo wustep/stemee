@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import './style.css';
 
+var apiURL = (process.env.NODE_ENV === 'production') ? process.env.REACT_APP_API_PROD : process.env.REACT_APP_API_DEV; // TODO: This is a temp solution for distinguishing API urls
+
 class Group extends Component {
   render() {
     return (
@@ -57,33 +59,64 @@ class RequiredTotal extends Component { /* Used for both Items and Groups to sim
 }
 
 export default class List extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { error: false, data: null };
+  }
+  componentDidMount() {
+    fetch(apiURL + "/list/" + this.props.match.params.list)
+    .then((res) => { // TODO: Improve this error formatting
+      if (!res.ok) {
+        throw new Error("Error fetching User ID!");
+      }
+      return res.json();
+    })
+    .then((data) => {
+      console.log(data);
+      this.setState({data: data[0]});
+    }).catch((err) => {
+      this.setState({error: err.toString()});
+    });
+  }
   render() {
-    return (
-      <div>
-        <h3>1st Year STEM EE Scholars Program Requirements (2017-18)</h3>
-        <p>Name: Stephen Wu</p>
-        <Group groupName='Group Name' groupCurrentPts='Current Points' groupRequiredPts='Required Points'>
-          <Item itemName='Item Name' itemCompletedQty='Completed Qty' itemRequiredQty='Required Qty' itemPtsPer='Pts Per'/>
-        </Group>
-        <br/><br/>
-        <Group groupName='Events' groupCurrentPts='0' groupRequiredPts='32'>
-          <Item itemName='STEM EE Scholars Events' itemCompletedQty='0' itemRequiredQty='6' itemMinQty='0' itemTooltip='3 STEM EE  Scholars Events are required each semester!' itemPtsPer='2' />
-            <li className='Item'>
-            <span className='Item-name Item-tooltip' data-tooltip="1 H&S event is recommended each semester!">Honors & Scholars Events</span>
-            <span className='Item-pts'>[<input className='Item-pts-current' type='number' min='0' max='2' defaultValue='0'></input> / <span className='Item-tooltip' data-tooltip="Max Possible: 2">0</span>] (2)</span>
-          </li>
-          <li className='Item'>
-            <span className='Item-name Item-tooltip' data-tooltip="1 Diversity event is required each semester!">Diversity Event</span>
-            <span className='Item-pts'>[<input className='Item-pts-current' type='number' min='0' max='2' defaultValue='0'></input> / <span className='Item-tooltip' data-tooltip="Max Possible: 2">2</span>] (2)</span>
-          </li>
-        </Group>
-        <button className='List-btn'>Reload</button>
-        <button className='List-btn'>Submit</button><br/>
-        <button className='List-btn'>Approved <label className="Switch">
-          <input type="checkbox"/>
-          <span className="Slider Slider-round"></span>
-        </label></button>
-      </div>
-    );
+    if (this.state.error) {
+      setTimeout(() => { this.props.history.push("/") }, 4500);
+      return (
+        <div className='err'>
+          <p>{this.state.error} Redirecting you now...</p>
+        </div>
+      );
+    } else if (this.state.data) {
+      console.log(this.state.data);
+      return (
+        <div>
+          <h3>{ this.state.data["Name"] }</h3>
+          <p>Name: [[NAME HERE]]</p>
+          <Group groupName='Group Name' groupCurrentPts='Current Points' groupRequiredPts='Required Points'>
+            <Item itemName='Item Name' itemCompletedQty='Completed Qty' itemRequiredQty='Required Qty' itemPtsPer='Pts Per'/>
+          </Group>
+          <br/>
+          {this.state.data["Groups"].map((group) => {
+            if (group !== null) {
+              return (
+                <Group key={ group["ID"] } groupName={ group["Name"] } groupCurrentPts={ 0 } groupRequiredPts={ group["Min_Pts"] } groupMaxPts={ group["Max_Pts"] }>
+                  {group["Items"].map((item) => {
+                    return (
+                      <Item itemName={item["Name"]} itemCompletedQty='0' itemRequiredQty={item["Min"]} itemMax={item["Max"]} itemTooltip={item["Description"]} itemPtsPer={item["Pts_Per"]} />
+                    );
+                  })}
+                </Group>
+              )
+            }}) }
+          <button className='List-btn'>Reload</button>
+          <button className='List-btn'>Submit</button><br/>
+          <button className='List-btn'>Approved <label className="Switch">
+            <input type="checkbox"/>
+            <span className="Slider Slider-round"></span>
+          </label></button>
+        </div>
+      );
+    }
+    return (<div className='err'><p>Loading...</p></div>);
   }
 }

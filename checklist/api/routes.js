@@ -12,7 +12,6 @@ routes.use((req, res, next) => { // TODO: Not sure if this is good practice?
 	res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
 	res.header('Access-Control-Allow-Methods', 'GET');
 	res.header("Access-Control-Allow-Credentials", "true")
-  console.log(origin);
 	next();
 });
 
@@ -62,49 +61,56 @@ routes.get('/list', cache('1 day'), (req, res) => { // Unused for now
 });
 
 routes.get('/list/:listid', cache('1 day'), (req, res) => {
-  spreadsheet("Lists", (data) => {
-    var result = [];
-    var {listid} = req.params;
-    var listFound = false;
-    console.log(data);
-    for (let i = 1; i < data.length; i++) {
-     if (data[i].length < 2) {
-       console.log("Error: Lists call returned " + data[i].length + " columns, expected >=2");
-       res.status(500).send("Server error");
-       return;
-     }
-     if (data[i][0] == listid) {
-       listFound = true;
-       result.push({"ID": data[i][0], "Name": data[i][1]});
-     }
-    }
-     if (listFound) {
-       var listFoundInGroups = false;
-       var groups = [];
-       spreadsheet("Groups", (data) => {
-         console.log(data);
-          for (let j = 1; j < data.length; j++) {
-            if (data[j].length < 3) {
-              console.log("Error: Lists call returned " + data[j].legnth + " columns, expected >=3");
-              res.status(500).send("Server error");
-              return;
+  spreadsheet("Items", (items) => {
+    spreadsheet("Lists", (data) => {
+      var result = [];
+      var {listid} = req.params;
+      var listFound = false;
+      console.log(data);
+      for (let i = 1; i < data.length; i++) {
+       if (data[i].length < 2) {
+         console.log("Error: Lists call returned " + data[i].length + " columns, expected >=2");
+         res.status(500).send("Server error");
+         return;
+       }
+       if (data[i][0] == listid) {
+         listFound = true;
+         result.push({"ID": data[i][0], "Name": data[i][1]});
+       }
+      }
+       if (listFound) {
+         var listFoundInGroups = false;
+         var groups = [];
+         spreadsheet("Groups", (data) => {
+           console.log(data);
+            for (let j = 1; j < data.length; j++) {
+              if (data[j].length < 3) {
+                console.log("Error: Lists call returned " + data[j].legnth + " columns, expected >=3");
+                res.status(500).send("Server error");
+                return;
+              }
+              if (data[j][0] == listid) {
+                let groupID = data[j][1];
+                listFoundInGroups = true;
+                groups[groupID] = {"ID": groupID, "Name": data[j][2], "Description": data[j][3], "Min_Pts": data[j][4], "Max_Pts:": data[j][5], "Items": []};
+                for (let k = 1; k < items.length; k++) {
+                  if (items[k][0] === listid && items[k][2] === groupID) {
+                    groups[groupID]["Items"].push({"ID": items[k][2], "Name": items[k][3], "Description": items[k][4], "Min": items[k][5], "Max": items[k][6], "Pts_Per": items[k][7]})
+                  }
+                }
+              } else if (listFoundInGroups) {
+                break; // Done, no longer that group in spreadsheet.
+              }
             }
-            if (data[j][0] == listid) {
-              let groupID = data[j][1];
-              listFoundInGroups = true;
-              groups[groupID] = {"ID": groupID, "Name": data[j][2], "Description": data[j][3], "Min_Pts": data[j][4], "Max_Pts:": data[j][5]};
-            } else if (listFoundInGroups) {
-              break; // Done, no longer that group in spreadsheet.
-            }
-          }
-          result[0]["Groups"] = groups;
-          res.status(200).send(result);
-        });
-        return;
-     } else {
-       res.status(400).send({"error": "Bad request - List not found"});
-     }
-   });
+            result[0]["Groups"] = groups;
+            res.status(200).send(result);
+          });
+          return;
+       } else {
+         res.status(400).send({"error": "Bad request - List not found"});
+       }
+     });
+  });
 });
 
 routes.get('/user/:userid', cache('1 day'), (req, res) => {
@@ -133,7 +139,7 @@ routes.get('/user/:userid', cache('1 day'), (req, res) => {
 });
 
 routes.get('/user/:userid/list/:listid', cache('10 minutes'), (req, res) => {
-
+  res.status(200).send("TODO!");
 });
 
 module.exports = routes;
