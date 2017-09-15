@@ -20,9 +20,9 @@ REACT_APP_API_PROD=http://localhost:3000/api
 REACT_APP_URL_PROD=http://localhost:3000
 ```
 
-With node & npm installed, run 'npm build' and then 'npm start' for production or 'npm run server' and 'npm run client' separately for development.
-
 Add a client_secret.json into root following [these instructions](https://developers.google.com/sheets/api/quickstart/nodejs#step_1_turn_on_the_api_name).
+
+With node & npm installed, run 'npm build' and then 'npm start' for production or 'npm run server' and 'npm run client' separately for development.
 
 Full commands list ("npm run [command]")
 ```
