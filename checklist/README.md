@@ -11,15 +11,13 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 Create .env file with the following variables (without comments):
 ```
 PORT=3000                # Port to use for client & server in production, or just client in development
-SERVER_PORT              # Port to use for server in development, default: 3010
+SERVER_PORT=3001         # Port to use for server in development, default: 3010
 SPREADSHEET              # Google Spreadsheet ID
-SPREADSHEET_GROUPS       # Name of Spreadsheet with Groups (default: "Groups")
-SPREADSHEET_ITEMS        # Name of Spreadsheet with Items (default: "Items")
-SPREADSHEET_USERS        # Name of Spreadsheet with Users (default: "Users")
-SPREADSHEET_TYPES        # Name of Spreadsheet with Types of Users (default: "Types")
-SPREADSHEET_TYPES_LISTS  # Name of Spreadsheet with Types of Users and Available Lists (default: "Types_Lists")
-SPREADSHEET_LISTS        # Name of Spreadsheet with Lists (default: "Lists")
-SPREADSHEET_ENTRIES      # Name of Spreadsheet with Entires (default: "Entries")
+
+REACT_APP_API_DEV=http://localhost:3001/api
+REACT_APP_URL_DEV=http://localhost:3000
+REACT_APP_API_PROD=http://localhost:3000/api
+REACT_APP_URL_PROD=http://localhost:3000
 ```
 
 With node & npm installed, run 'npm build' and then 'npm start' for production or 'npm run server' and 'npm run client' separately for development.
