@@ -29,7 +29,7 @@ class Item extends Component {
 // Min is currently set to always be 0. This is probably always the case, that the minimum a person has done for an entry is 0, but this may change in the future.
 class CompletedQty extends Component { /* Used only for Items */
   render() {
-      if (this.props.itemMaxQty && isNaN(this.props.itemCompletedQty)) { // In the case of the example group, we just return the text instead of the input
+      if (this.props.itemCompletedQty && isNaN(this.props.itemCompletedQty)) { // In the case of the example group, we just return the text instead of the input
         return (
           <span>{this.props.itemCompletedQty}</span>
         );
