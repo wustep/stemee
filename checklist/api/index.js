@@ -6,6 +6,7 @@ require('dotenv').config()
 const app = express();
 
 // Pick SERVER_PORT if NODE_ENV is "development", otherwise, pick PORT, otherwise, pick 3000
+console.log(`Server: ${process.env.NODE_ENV}`);
 const port = (process.env.NODE_ENV == 'development') ? process.env.SERVER_PORT : (process.env.PORT ? process.env.PORT : 3010);
 
 // TODO: properly send 404 -- not fixed by commit (oops) - https://reacttraining.com/react-router/web/guides/server-rendering

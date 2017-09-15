@@ -24,11 +24,11 @@
     "babel-preset-stage-2": "^6.24.1"
   },
   "scripts": {
-    "build": "cross-env NODE_ENV=production&& react-scripts build && babel api -d server",
-    "start": "cross-env NODE_ENV=production&& node ./server/index.js",
-    "start-test": "cross-env NODE_ENV=production&& nodemon ./api/index.js --exec babel-node",
+    "build": "cross-env NODE_ENV=production react-scripts build && babel api -d server",
+    "start": "cross-env NODE_ENV=production node ./server/index.js",
+    "start-test": "cross-env NODE_ENV=production nodemon ./api/index.js --exec babel-node",
     "go": "npm run build && npm run start",
-    "server": "cross-env NODE_ENV=development&& nodemon ./api/index.js --exec babel-node",
+    "server": "cross-env NODE_ENV=development nodemon ./api/index.js --exec babel-node",
     "server-build": "babel api -d server",
     "client": "react-scripts start",
     "client-build": "react-scripts build",
