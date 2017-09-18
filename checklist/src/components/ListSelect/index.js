@@ -14,10 +14,10 @@ fetch(apiURL + "/list").then((res) => res.json())
 });
 
 class ListSelect extends Component {
-  constructor(props) {
-    super(props);
+  	constructor(props) {
+    	super(props);
 		this.state = { error: false, data: null, listDropdown: null };
-  }
+  	}
 	componentDidMount() {
 		fetch(apiURL + "/user/" + this.props.match.params.user)
 		.then((res) => { // TODO: Improve this error formatting
@@ -35,13 +35,13 @@ class ListSelect extends Component {
 			this.setState({error: err.toString()});
 		});
 	}
-  handleInputChange(e) {
+  	handleInputChange(e) {
 		this.setState({[e.target.name] : e.target.value});
-  }
-  handleSubmit() {
+	}
+	handleSubmit() {
 		this.props.history.push("/user/" + this.props.match.params.user + "/list/" + this.state.listDropdown);
-  }
-  render() {
+	}
+  	render() {
 		if (this.state.error) {
 			setTimeout(() => { this.props.history.push("/") }, 4500);
 			return (
@@ -51,29 +51,29 @@ class ListSelect extends Component {
 			);
 		} else if (this.state.data) {
 			return (
-        <div>
-          <p>Select the applicable list below.</p>
-          <p>User ID: { this.state.data["ID"] }</p>
+	      <div>
+	        <p>Select the applicable list below.</p>
+	        <p>User ID: { this.state.data["ID"] }</p>
 					<p>Name: { this.state.data["Name"] }</p>
 
-          <select name="listDropdown"
-                  className="Select-in"
-           				value={this.state.listDropdown}
-           				onChange={this.handleInputChange.bind(this)}>
-                  {this.state.data["Lists"].map(item => <option key={item} value={item}>{(lists.length >= item) ? lists[item] : item}</option>)}
-          </select>
-          <br/>
+	        <select name="listDropdown"
+	                className="Select-in"
+	         				value={this.state.listDropdown}
+	         				onChange={this.handleInputChange.bind(this)}>
+	                {this.state.data["Lists"].map(item => <option key={item} value={item}>{(lists.length >= item) ? lists[item] : item}</option>)}
+	        </select>
+	        <br/>
 
-          <button className="Select-in" onClick={this.handleSubmit.bind(this)}>Submit</button>
+	        <button className="Select-in" onClick={this.handleSubmit.bind(this)}>Submit</button>
 
-          <CSSTransitionGroup transitionName="reactFade" transitionEnterTimeout={500} transitionLeaveTimeout={300}>
-            <span key="err" className='Select-err'>{this.state.error}</span>
-          </CSSTransitionGroup>
-        </div>
+	        <CSSTransitionGroup transitionName="reactFade" transitionEnterTimeout={500} transitionLeaveTimeout={300}>
+	          <span key="err" className='Select-err'>{this.state.error}</span>
+	        </CSSTransitionGroup>
+	      </div>
       )
 		}
 		return (<div className='err'><p>Loading...</p></div>);
-  }
+  	}
 }
 
 export default withRouter(ListSelect);
