@@ -1,30 +1,40 @@
 import React, { Component } from 'react';
 import './style.css';
 
-var apiURL = (process.env.NODE_ENV === 'production') ? process.env.REACT_APP_API_PROD : process.env.REACT_APP_API_DEV; // TODO: This is a temp solution for distinguishing API urls
+const apiURL = (process.env.NODE_ENV === 'production') ? process.env.REACT_APP_API_PROD : process.env.REACT_APP_API_DEV; // TODO: This is a temp solution for distinguishing API urls
 
-
+// Group class, which contains items within and calculates points completed
 class Group extends Component {
+	groupPointsColor() {
+		if (isNaN(this.props.groupCurrentPts) || this.props.groupCurrentPts == 0) {
+			return "#ffffff"; // White = none
+		} else if (this.props.groupCurrentPts >= this.props.groupMinPts) {
+			return "#2DE62D"; // Green = completed
+		}
+		return "rgb(255, 180, 0)"; // Orange = in progress
+	}
 	groupBackground() {
 		let current = this.props.groupCurrentPts;
 		let req = this.props.groupMinPts;
-		if (req == 0 || isNaN(req)) {
-			console.log("here");
+		if (req == 0 || isNaN(req)) { // If MinPts is text or 0, return a purple background for group
 			return "rgb(80,40,100)";
-		} else {
-			console.log("there");
+		} else { // Otherwise, set up a gradient from green to red based on progress
 			let fraction = current / req;
-			let left = fraction / 2 * 100;
-			let right = left * 100;
-			console.log('linear-gradient(to right, green ' + left + '%, rgb(160,50,50) ' + right + '%)');
-			return 'linear-gradient(to right, green ' + left + '%, rgb(160,50,50) ' + right + '%)';
+			let left = fraction / 2 * 100; // We have the real percentage be equidistant from the left and right gradient marks
+			let right = left * 3;
+			console.log('linear-gradient(to right, rgb(0, 180, 140) ' + left + '%, rgb(160,50,50) ' + right + '%)');
+			return 'linear-gradient(to right, rgb(0, 180, 140) ' + left + '%, rgb(160,50,50) ' + right + '%)';
 		}
 	}
 	render() {
 		return (
 			<ul className='Group' style={{background: this.groupBackground()}}>
-				<span className='Group-name'>{this.props.groupName}</span>
-				<span className='Group-pts'>({this.props.groupCurrentPts} / <RequiredTotal minQty={this.props.groupMinPts} maxQty={this.props.groupMaxPts} />)</span><br/>
+				<span className='Group-name'>
+					{this.props.groupName}
+				</span>
+				<span className='Group-pts' style={{color: this.groupPointsColor()}}>
+					(<span className='Group-current-pts'>{this.props.groupCurrentPts}</span> / <RequiredTotal minQty={this.props.groupMinPts} maxQty={this.props.groupMaxPts} />)
+				</span><br/>
 				{this.props.children}
 			</ul>
 		);
@@ -46,7 +56,7 @@ class Item extends Component {
 	render() {
 		// Different color for required versus non-requried items
 		return (
-			<li className='Item' style={{background: (!this.props.itemMinQty.isNaN && this.props.itemMinQty > 0) ? "#555555" : "#999999"}}>
+			<li className='Item' style={{background: (!this.props.itemMinQty.isNaN && this.props.itemMinQty > 0) ? "#555555" : "#666666"}}>
 				<span className={'Item-name' + (this.props.itemTooltip ? ' Item-tooltip' : '')} data-tooltip={this.props.itemTooltip}>{this.props.itemName}</span>
 				<span className='Item-pts'>[<CompletedQty onCompletedChange={this.handleCompletedChange.bind(this)} itemCompletedQty={this.props.itemCompletedQty} itemMaxQty={this.props.itemMaxQty} /> / <RequiredTotal minQty={this.props.itemMinQty} maxQty={this.props.itemMaxQty} />] ({this.props.itemPtsPer})</span>
 			</li>
@@ -97,27 +107,27 @@ export default class List extends Component {
 	}
 	componentDidMount() {
 		fetch(apiURL + "/list/" + this.props.match.params.list)
-		.then((res) => { // TODO: Improve this error formatting
+		.then(res => { // TODO: Improve this error formatting
 			if (!res.ok) {
 				throw new Error("Error fetching User ID!");
 			}
 			return res.json();
 		})
-		.then((data) => {
+		.then(data => {
 			this.setState({data: data[0]});
-		}).catch(err => {
-			console.log(err.toString());
+		})
+		.catch(err => {
 			this.setState({error: err.toString()});
 		});
 
 		fetch(apiURL + "/user/" + this.props.match.params.user) // TODO: Get /user/list, but also minimize API calls
-		.then((res) => {
+		.then(res => {
 			if (!res.ok) {
 				throw new Error("Error fetching User ID!");
 			}
 			return res.json();
 		})
-		.then((data) => {
+		.then(data => {
 			this.setState({user: data[0]});
 		})
 		.catch(err => {
