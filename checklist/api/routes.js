@@ -66,7 +66,6 @@ routes.get('/list/:listid', cache('1 day'), (req, res) => {
       var result = [];
       var {listid} = req.params;
       var listFound = false;
-      console.log(data);
       for (let i = 1; i < data.length; i++) {
        if (data[i].length < 2) {
          console.log("Error: Lists call returned " + data[i].length + " columns, expected >=2");
@@ -82,7 +81,6 @@ routes.get('/list/:listid', cache('1 day'), (req, res) => {
          var listFoundInGroups = false;
          var groups = [];
          spreadsheet("Groups", (data) => {
-           console.log(data);
             for (let j = 1; j < data.length; j++) {
               if (data[j].length < 3) {
                 console.log("Error: Lists call returned " + data[j].legnth + " columns, expected >=3");
