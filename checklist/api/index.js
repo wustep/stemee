@@ -9,13 +9,14 @@ const app = express();
 console.log(`Server: ${process.env.NODE_ENV}`);
 const port = (process.env.NODE_ENV == 'development') ? process.env.SERVER_PORT : (process.env.PORT ? process.env.PORT : 3010);
 
+app.use('/api', routes);
+
 // TODO: properly send 404 -- not fixed by commit (oops) - https://reacttraining.com/react-router/web/guides/server-rendering
 if (process.env.NODE_ENV == 'production') {
 	console.log('Server: Serving static assets in production');
 	console.log(`Server: Client assets on port ${port}`);
 	app.use('/', express.static('././build'));
 }
-app.use('/api', routes);
 
 app.listen(port, () => {
 	console.log(`Server: Started on port ${port}`)
