@@ -18,6 +18,8 @@ REACT_APP_API_DEV=http://localhost:3001/api
 REACT_APP_URL_DEV=http://localhost:3000
 REACT_APP_API_PROD=http://localhost:3000/api
 REACT_APP_URL_PROD=http://localhost:3000
+REACT_APP_GOOGLE_ANALYTICS=UA_......
+
 ```
 
 Add a client_secret.json into root following [these instructions](https://developers.google.com/sheets/api/quickstart/nodejs#step_1_turn_on_the_api_name).

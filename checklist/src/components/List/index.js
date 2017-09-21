@@ -154,7 +154,6 @@ export default class List extends Component {
 					<br/>
 					{this.state.data["Groups"].map((group) => {
 						if (group !== null) {
-							console.log(group);
 							return (
 								<Group key={group["ID"]} groupName={group["Name"]} groupCurrentPts='0' groupMinPts={group["Min_Pts"]} groupMaxPts={group["Max_Pts"]}>
 									{group["Items"].map((item) => {

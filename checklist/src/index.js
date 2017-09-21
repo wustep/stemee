@@ -11,9 +11,21 @@ import NotFound from './components/NotFound';
 
 import registerServiceWorker from './registerServiceWorker';
 import './index.css';
+import ReactGA from 'react-ga';
+
+if (process.env.REACT_APP_GOOGLE_ANALYTICS) {
+  ReactGA.initialize(process.env.REACT_APP_GOOGLE_ANALYTICS);
+}
+
+function logPageView() {
+  if (process.env.REACT_APP_GOOGLE_ANALYTICS) {
+    ReactGA.set({ page: window.location.pathname });
+    ReactGA.pageview(window.location.pathname);
+  }
+}
 
 ReactDOM.render(
-  <BrowserRouter>
+  <BrowserRouter onUpdate={ logPageView }>
     <App>
       <Switch>
         <Route exact path="/user/:user" component={ListSelect} />
