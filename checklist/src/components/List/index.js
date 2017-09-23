@@ -3,6 +3,8 @@ import './style.css';
 
 const apiURL = (process.env.NODE_ENV === 'production') ? process.env.REACT_APP_API_PROD : process.env.REACT_APP_API_DEV; // TODO: This is a temp solution for distinguishing API urls
 
+// TODO: Link group points to list points to keep a total current points!
+
 // Group class, which contains items within and calculates points completed
 class Group extends Component {
 	constructor(props) {
