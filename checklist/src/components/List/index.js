@@ -5,16 +5,25 @@ const apiURL = (process.env.NODE_ENV === 'production') ? process.env.REACT_APP_A
 
 // Group class, which contains items within and calculates points completed
 class Group extends Component {
+	constructor(props) {
+		super(props);
+		let totalPoints = 0;
+		this.state = { items: (typeof this.props.items !== 'undefined') ? this.props.items.map(item => {
+			item.points = 0; // TODO: Load actual user's points here.
+			totalPoints += 0;
+			return item;
+		}) : [], totalPoints: totalPoints };
+	}
 	groupPointsColor() {
-		if (isNaN(this.props.groupCurrentPts) || this.props.groupCurrentPts == 0) {
+		if (isNaN(this.props.groupCurrentPts) || this.state.totalPoints === 0) {
 			return "#ffffff"; // White = none
-		} else if (this.props.groupCurrentPts >= this.props.groupMinPts) {
+		} else if (this.state.totalPoints >= this.props.groupMinPts) {
 			return "#2DE62D"; // Green = completed
 		}
-		return "rgb(255, 180, 0)"; // Orange = in progress
+		return "rgb(255, 210, 0)"; // Orange = in progress
 	}
 	groupBackground() {
-		let current = this.props.groupCurrentPts;
+		let current = this.state.totalPoints;
 		let req = this.props.groupMinPts;
 		if (req == 0 || isNaN(req)) { // If MinPts is text or 0, return a purple background for group
 			return "rgb(80,40,100)";
@@ -26,6 +35,21 @@ class Group extends Component {
 			return 'linear-gradient(to right, rgb(0, 180, 140) ' + left + '%, rgb(160,50,50) ' + right + '%)';
 		}
 	}
+	updatePointsForItem(itemID, points) {
+		if (!!this.state.items.length) {
+			let totalPoints = 0;
+			this.setState({
+				items: this.state.items.map(item => {
+					if (item.ID == itemID) {
+						item.points = points;
+					}
+					totalPoints += item.points;
+					return item;
+				})
+			});
+			this.setState({totalPoints: totalPoints});
+		}
+	}
 	render() {
 		return (
 			<ul className='Group' style={{background: this.groupBackground()}}>
@@ -33,8 +57,15 @@ class Group extends Component {
 					{this.props.groupName}
 				</span>
 				<span className='Group-pts' style={{color: this.groupPointsColor()}}>
-					(<span className='Group-current-pts'>{this.props.groupCurrentPts}</span> / <RequiredTotal minQty={this.props.groupMinPts} maxQty={this.props.groupMaxPts} />)
+					<span className='Group-current-pts'>{(isNaN(this.props.groupCurrentPts) ? this.props.groupCurrentPts : this.state.totalPoints)}</span> / <RequiredTotal minQty={this.props.groupMinPts}
+								 maxQty={this.props.groupMaxPts} />
 				</span><br/>
+				{!!this.state.items.length && this.state.items.map(item =>
+					<Item key={item["ID"]} itemID={item["ID"]} itemName={item["Name"]} itemCompletedQty='0'
+								itemMinQty={item["Min"]} itemMaxQty={item["Max"]} itemTooltip={item["Description"]} itemPtsPer={item["Pts_Per"]}
+								updatePoints={this.updatePointsForItem.bind(this)}
+						/>
+				)}
 				{this.props.children}
 			</ul>
 		);
@@ -44,14 +75,17 @@ class Group extends Component {
 class Item extends Component {
 	constructor(props) {
 		super(props);
-		this.state = {completed: 0, points: 0}
+		//this.state = {completed: 0, points: 0}
 	}
 	componentDidMount() {
-		this.setState({points: this.props.itemCompletedQty * this.props.itemPtsPer});
+		//this.setState({points: this.props.itemCompletedQty * this.props.itemPtsPer});
 	}
 	handleCompletedChange(value) {
-		this.setState({completed: value});
-		this.setState({points: value * this.props.itemPtsPer});
+		let points = value * this.props.itemPtsPer;
+		//this.setState({completed: value});
+		//this.setState({points: points});
+		console.log("Completed change" + this.props.itemID + " " + points);
+		this.props.updatePoints(this.props.itemID, points);
 	}
 	render() {
 		// Different color for required versus non-requried items
@@ -117,6 +151,7 @@ export default class List extends Component {
 			this.setState({data: data[0]});
 		})
 		.catch(err => {
+			console.log(err.toString());
 			this.setState({error: err.toString()});
 		});
 
@@ -155,13 +190,7 @@ export default class List extends Component {
 					{this.state.data["Groups"].map((group) => {
 						if (group !== null) {
 							return (
-								<Group key={group["ID"]} groupName={group["Name"]} groupCurrentPts='0' groupMinPts={group["Min_Pts"]} groupMaxPts={group["Max_Pts"]}>
-									{group["Items"].map((item) => {
-										return (
-											<Item key={item["ID"]} itemName={item["Name"]} itemCompletedQty='0' itemMinQty={item["Min"]} itemMaxQty={item["Max"]} itemTooltip={item["Description"]} itemPtsPer={item["Pts_Per"]} />
-										);
-									})}
-								</Group>
+								<Group items={group["Items"]} key={group["ID"]} groupName={group["Name"]} groupCurrentPts='0' groupMinPts={group["Min_Pts"]} groupMaxPts={group["Max_Pts"]} />
 							)
 						}}) }
 					{/*<button className='List-btn'>Reload</button>
