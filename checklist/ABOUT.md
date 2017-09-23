@@ -7,5 +7,7 @@ This app was built by Stephen Wu to facilitate program requirements for the [STE
 
 ## Contact
 
+Feel free to contact Stephen if you have any questions, suggestions, or even if you'd like to contribute to the webapp! For any program requirements questions (about STEM Scholars), contact Jorge Eduardo.
+
 - Stephen Wu - STEM EE Scholars Consultant - wu.2719@osu.edu
 - Jorge Eduardo Mendoza - STEM EE Scholars Coordinator - mendoza.773@osu.edu
