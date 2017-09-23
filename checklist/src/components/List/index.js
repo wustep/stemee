@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import './style.css';
+import './tooltip.css';
 
 const apiURL = (process.env.NODE_ENV === 'production') ? process.env.REACT_APP_API_PROD : process.env.REACT_APP_API_DEV; // TODO: This is a temp solution for distinguishing API urls
 
@@ -93,7 +94,7 @@ class Item extends Component {
 		// Different color for required versus non-requried items
 		return (
 			<li className='Item' style={{background: (!this.props.itemMinQty.isNaN && this.props.itemMinQty > 0) ? "#555555" : "#666666"}}>
-				<span className={'Item-name' + (this.props.itemTooltip ? ' Item-tooltip' : '')} data-tooltip={this.props.itemTooltip}>{this.props.itemName}</span>
+				<span className={'Item-name' + (this.props.itemTooltip ? ' Item-tooltip tooltip' : '')} data-tooltip={this.props.itemTooltip}>{this.props.itemName}</span>
 				<span className='Item-pts'>[<CompletedQty onCompletedChange={this.handleCompletedChange.bind(this)} itemCompletedQty={this.props.itemCompletedQty} itemMaxQty={this.props.itemMaxQty} /> / <RequiredTotal minQty={this.props.itemMinQty} maxQty={this.props.itemMaxQty} />] ({this.props.itemPtsPer})</span>
 			</li>
 		)
@@ -126,7 +127,7 @@ class RequiredTotal extends Component { /* Used for both Items and Groups to sim
 	render() {
 		if (this.props.maxQty) {
 			return (
-				<span className='Item-tooltip' data-tooltip={"Max Possible: " + this.props.maxQty}>{this.props.minQty}</span>
+				<span className='Item-tooltip tooltip-left' data-tooltip={"Max Possible: " + this.props.maxQty}>{this.props.minQty}</span>
 			);
 		} else {
 			return (
