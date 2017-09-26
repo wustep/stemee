@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import logo from './logo.svg';
 import './style.css';
 
+// TODO fix this footer - dot doesn't show on mobile sometimes
 export default class App extends Component {
 	render() {
 		return (

@@ -9,33 +9,24 @@ import ListSelect from "./components/ListSelect";
 import List from "./components/List";
 import NotFound from './components/NotFound';
 
-import registerServiceWorker from './registerServiceWorker';
 import './index.css';
-import ReactGA from 'react-ga';
-
-if (process.env.REACT_APP_GOOGLE_ANALYTICS) {
-  ReactGA.initialize(process.env.REACT_APP_GOOGLE_ANALYTICS);
-}
-
-function logPageView() {
-  if (process.env.REACT_APP_GOOGLE_ANALYTICS) {
-    ReactGA.set({ page: window.location.pathname });
-    ReactGA.pageview(window.location.pathname);
-  }
-}
+import withTracker from './withTracker';
+import registerServiceWorker from './registerServiceWorker';
 
 ReactDOM.render(
-  <BrowserRouter onUpdate={ logPageView }>
+  <BrowserRouter>
     <App>
       <Switch>
-        <Route exact path="/user/:user" component={ListSelect} />
-        <Route exact path="/user/:user/list/:list" component={List} />
-        <Route exact path="/" component={UserSelect} />
-        <Route path="*" component={NotFound} status={404} />
+        <Route exact path="/user/:user" component={withTracker(ListSelect)} />
+        <Route exact path="/user/:user/list/:list" component={withTracker(List)} />
+        <Route exact path="/" component={withTracker(UserSelect)} />
+        <Route path="*" component={withTracker(NotFound)} status={404} />
       </Switch>
     </App>
   </BrowserRouter>,
   document.getElementById('root')
 );
 
-registerServiceWorker();
+if (process.env.NODE_ENV !== 'production') {
+	registerServiceWorker();
+}
