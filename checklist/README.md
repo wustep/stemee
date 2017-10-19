@@ -2,6 +2,8 @@
 
 This app was built by Stephen Wu to facilitate program requirements for the [STEM Exploration & Engagement Scholars Program](https://u.osu.edu/stemeescholars/). Checklist uses Google Spreadsheets to read and store program requirements and progress for users in any organization.
 
+![Instructions](https://raw.githubusercontent.com/wustep/stemee/master/checklist/INFO.png)
+
 ## Tech
 
 This project was bootstrapped with [Create React App](https://github.com/facebookincubator/create-react-app). Checklist was written in NodeJS, using React and other packages and the [Google Spreadsheets v4 API](https://developers.google.com/sheets/api/).
