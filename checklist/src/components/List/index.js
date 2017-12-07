@@ -13,10 +13,10 @@ class Group extends Component {
 		let totalPoints = 0;
 		this.state = { items: (typeof this.props.items !== 'undefined') ? this.props.items.map(item => {
 			item.points = 0; // TODO: Change this to "Points" for consistency?
-      if (item["Submit_Qty"]) {
-        item.points = item["Submit_Qty"] * item["Pts_Per"];
-			  totalPoints += item.points;
-      }
+			if (item["Submit_Qty"]) {
+				item.points = item["Submit_Qty"] * item["Pts_Per"];
+				totalPoints += item.points;
+			}
 			return item;
 		}) : [], totalPoints: totalPoints };
 	}
@@ -55,7 +55,7 @@ class Group extends Component {
 			});
 			this.setState({totalPoints: totalPoints});
 		}
-    this.props.updateItemForList(this.props.groupID, itemID, value);
+		this.props.updateItemForList(this.props.groupID, itemID, value);
 	}
 	render() {
 		return (
@@ -117,9 +117,9 @@ class CompletedQty extends Component { /* Used only for Items */
 		} else {
 			return (
 				<input className='Item-pts-current' type='number' min={0}
-					   max={this.props.itemMaxQty}
+						 max={this.props.itemMaxQty}
 						 onChange={this.handleChange.bind(this)}
-					   defaultValue={(this.props.itemCompletedQty ? this.props.itemCompletedQty : 0)}>
+						 defaultValue={(this.props.itemCompletedQty ? this.props.itemCompletedQty : 0)}>
 				</input>
 			);
 		}
@@ -146,7 +146,7 @@ export default class List extends Component {
 		this.state = { error: false, data: null, user: null, totalPoints: 0 };
 	}
 	componentDidMount() {
-    // Fetch list info
+		// Fetch list info
 		fetch(apiURL + "/list/" + this.props.match.params.list)
 		.then(res => { // TODO: Improve this error formatting
 			if (!res.ok) {
@@ -155,124 +155,124 @@ export default class List extends Component {
 			return res.json();
 		})
 		.then(data => {
-      // Fetch user info
-      fetch(apiURL + "/user/" + this.props.match.params.user) // TODO: Maybe minimize API calls here...
-      .then(res => {
-        if (!res.ok) {
-          throw new Error("Error fetching User ID!");
-        }
-        return res.json();
-      })
-      .then(data2 => {
-        this.setState({user: data2[0]});
-        // Fetch user's list
-        fetch(apiURL + "/user/" + this.props.match.params.user + "/list/" + this.props.match.params.list)
-        .then(res => {
-          if (!res.ok) {
-            throw new Error("Error fetching User ID's List!");
-          }
-          return res.json();
-        })
-        .then(data3 => {
-          let totalPoints = 0;
-          // Iterate through all group items and check if they are set or not
-          let groups = data[0]["Groups"];
-          for (let i = 0; i < groups.length; i++) { // TODO: Revise to maps or somethin this is messy
-            if (data[0]["Groups"][i]) {
-              let groupItems = data[0]["Groups"][i]["Items"];
-              for (let j = 0; groupItems && j < groupItems.length; j++) {
-                let groupItem = groupItems[j];
-                if (data3[groupItem["ID"]] && typeof data3[groupItem["ID"]] !== 'undefined') {
-                  if ("Unapproved Qty" in data3[groupItem["ID"]]) {
-                    let unapprovedQty = data3[groupItem["ID"]]["Unapproved Qty"]; // Previously submitted qty
-                    groupItem["Qty"] = unapprovedQty;
-                    groupItem["Submit_Qty"] = unapprovedQty;
-                    this.setState({totalPoints: this.state.totalPoints + parseInt(unapprovedQty, 10) * parseInt(groupItem["Pts_Per"], 10)});
-                  }
-                  /*
-                  // TODO: Approved quantities
-                  if ("Approved Qty" in data3[groupItem["ID"]]) {
-                    data[0]["Groups"][i]["Items"][j]["Approved Qty"] = data3[groupItem["ID"]]["Approved Qty"];
-                  }
-                  */
-                }
-              }
-            }
-          }
-          this.setState({data: data[0]}); // Set data after running through all that stuff.
-        })
-        .catch(err => {
-          console.log(err.toString());
-          this.setState({error: err.toString()});
-        });
-      })
-      .catch(err => {
-        console.log(err.toString());
-        this.setState({error: err.toString()});
-      });
+			// Fetch user info
+			fetch(apiURL + "/user/" + this.props.match.params.user) // TODO: Maybe minimize API calls here...
+			.then(res => {
+				if (!res.ok) {
+					throw new Error("Error fetching User ID!");
+				}
+				return res.json();
+			})
+			.then(data2 => {
+				this.setState({user: data2[0]});
+				// Fetch user's list
+				fetch(apiURL + "/user/" + this.props.match.params.user + "/list/" + this.props.match.params.list)
+				.then(res => {
+					if (!res.ok) {
+						throw new Error("Error fetching User ID's List!");
+					}
+					return res.json();
+				})
+				.then(data3 => {
+					let totalPoints = 0;
+					// Iterate through all group items and check if they are set or not
+					let groups = data[0]["Groups"];
+					for (let i = 0; i < groups.length; i++) { // TODO: Revise to maps or somethin this is messy
+						if (data[0]["Groups"][i]) {
+							let groupItems = data[0]["Groups"][i]["Items"];
+							for (let j = 0; groupItems && j < groupItems.length; j++) {
+								let groupItem = groupItems[j];
+								if (data3[groupItem["ID"]] && typeof data3[groupItem["ID"]] !== 'undefined') {
+									if ("Unapproved Qty" in data3[groupItem["ID"]]) {
+										let unapprovedQty = data3[groupItem["ID"]]["Unapproved Qty"]; // Previously submitted qty
+										groupItem["Qty"] = unapprovedQty;
+										groupItem["Submit_Qty"] = unapprovedQty;
+										this.setState({totalPoints: this.state.totalPoints + parseInt(unapprovedQty, 10) * parseInt(groupItem["Pts_Per"], 10)});
+									}
+									/*
+									// TODO: Approved quantities
+									if ("Approved Qty" in data3[groupItem["ID"]]) {
+										data[0]["Groups"][i]["Items"][j]["Approved Qty"] = data3[groupItem["ID"]]["Approved Qty"];
+									}
+									*/
+								}
+							}
+						}
+					}
+					this.setState({data: data[0]}); // Set data after running through all that stuff.
+				})
+				.catch(err => {
+					console.log(err.toString());
+					this.setState({error: err.toString()});
+				});
+			})
+			.catch(err => {
+				console.log(err.toString());
+				this.setState({error: err.toString()});
+			});
 		})
 		.catch(err => {
 			console.log(err.toString());
 			this.setState({error: err.toString()});
 		});
 	}
-  updateItemForList(groupID, itemID, qty) {
-    let groups = this.state.data["Groups"];
-    let groupItems = groups[groupID]["Items"];
-    let groupItemID = -1;
-    for (let i = 0; groupItemID === -1 && i < groupItems.length; i++) {
-      if (groupItems[i]["ID"] == itemID) {
-        groupItemID = i;
-      }
-    }
-    if (groupItemID >= 0) { // group item to update was found!
-      // Get current quantities
-      let pointsPer = groups[groupID]["Items"][groupItemID]["Pts_Per"];
-      let prevQty = groups[groupID]["Items"][groupItemID]["Qty"] ? groups[groupID]["Items"][groupItemID]["Qty"] : 0;
-      this.setState({
-        totalPoints: (this.state.totalPoints + (qty - prevQty) * pointsPer)
-      });
-      // Set quantity
-      groups[groupID]["Items"][groupItemID]["Qty"] = qty;
-      // Change state of data
-      this.setState({ // TODO: Is this efficient? Not sure.
-        data: {
-          ...this.state.data,
-          groups
-        }
-      });
-    } else {
-      this.setState({error: "Group item not found on update: GROUP: " + groupID + " ITEM: " + itemID + ". Please screenshot & report!"});
-    }
-  }
-  handleReload() {
-    if (window.confirm("Are you sure? You will lose all data since the last time you clicked submit!")) {
-      window.location.reload()
-    }
-  }
-  handleSubmit() {
-    let groups = this.state.data["Groups"];
-    let changes = 0;
-    for (let i = 0; i < groups.length; i++) {
-      if (groups[i]) {
-        let items = groups[i]["Items"];
-        for (let j = 0; j < items.length; j++) {
-          // Check for changed item
-          if (items[j] && items[j]["Qty"] != items[j]["Submit_Qty"]) {
-            items[j]["Submit_Qty"] = items[j]["Qty"]; // TODO: This is setting state w/o setState. bad?
-            // TODO: Add change to spreadsheet!
-            changes++;
-          }
-        }
-      }
-    }
-    // Inform user of changes (if any)
-    if (changes) {
-      alert(`Submitted ${changes} change${(changes > 1) ? "s" : ""}`); // Pluralize
-    } else {
-      alert("No changes to submit!");
-    }
-  }
+	updateItemForList(groupID, itemID, qty) {
+		let groups = this.state.data["Groups"];
+		let groupItems = groups[groupID]["Items"];
+		let groupItemID = -1;
+		for (let i = 0; groupItemID === -1 && i < groupItems.length; i++) {
+			if (groupItems[i]["ID"] == itemID) {
+				groupItemID = i;
+			}
+		}
+		if (groupItemID >= 0) { // group item to update was found!
+			// Get current quantities
+			let pointsPer = groups[groupID]["Items"][groupItemID]["Pts_Per"];
+			let prevQty = groups[groupID]["Items"][groupItemID]["Qty"] ? groups[groupID]["Items"][groupItemID]["Qty"] : 0;
+			this.setState({
+				totalPoints: (this.state.totalPoints + (qty - prevQty) * pointsPer)
+			});
+			// Set quantity
+			groups[groupID]["Items"][groupItemID]["Qty"] = qty;
+			// Change state of data
+			this.setState({ // TODO: Is this efficient? Not sure.
+				data: {
+					...this.state.data,
+					groups
+				}
+			});
+		} else {
+			this.setState({error: "Group item not found on update: GROUP: " + groupID + " ITEM: " + itemID + ". Please screenshot & report!"});
+		}
+	}
+	handleReload() {
+		if (window.confirm("Are you sure? You will lose all data since the last time you clicked submit!")) {
+			window.location.reload()
+		}
+	}
+	handleSubmit() {
+		let groups = this.state.data["Groups"];
+		let changes = 0;
+		for (let i = 0; i < groups.length; i++) {
+			if (groups[i]) {
+				let items = groups[i]["Items"];
+				for (let j = 0; j < items.length; j++) {
+					// Check for changed item
+					if (items[j] && items[j]["Qty"] != items[j]["Submit_Qty"]) {
+						items[j]["Submit_Qty"] = items[j]["Qty"]; // TODO: This is setting state w/o setState. bad?
+						// TODO: Add change to spreadsheet!
+						changes++;
+					}
+				}
+			}
+		}
+		// Inform user of changes (if any)
+		if (changes) {
+			alert(`Submitted ${changes} change${(changes > 1) ? "s" : ""}`); // Pluralize
+		} else {
+			alert("No changes to submit!");
+		}
+	}
 	render() {
 		if (this.state.error) { // Removed redirect for now for testing.
 			//setTimeout(() => { this.props.history.push("/") }, 4500);
