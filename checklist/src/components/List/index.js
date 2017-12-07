@@ -12,7 +12,7 @@ class Group extends Component {
 		super(props);
 		let totalPoints = 0;
 		this.state = { items: (typeof this.props.items !== 'undefined') ? this.props.items.map(item => {
-			item.points = 0;
+			item.points = 0; // TODO: Change this to "Points" for consistency?
       if (item["Submit_Qty"]) {
         item.points = item["Submit_Qty"] * item["Pts_Per"];
 			  totalPoints += item.points;
@@ -41,13 +41,13 @@ class Group extends Component {
 			return 'linear-gradient(to right, rgb(0, 180, 140) ' + left + '%, rgb(160,50,50) ' + right + '%)';
 		}
 	}
-	updatePointsForItem(itemID, points) {
+	updateItemForGroup(itemID, value) {
 		if (!!this.state.items.length) {
 			let totalPoints = 0;
-			this.setState({
+			this.setState({ // TODO: Can edit to not recalculate points based on ALL items, and just update the individual one...
 				items: this.state.items.map(item => {
 					if (item.ID == itemID) {
-						item.points = points;
+						item.points = value * item["Pts_Per"];
 					}
 					totalPoints += item.points;
 					return item;
@@ -55,6 +55,7 @@ class Group extends Component {
 			});
 			this.setState({totalPoints: totalPoints});
 		}
+    this.props.updateItemForList(this.props.groupID, itemID, value);
 	}
 	render() {
 		return (
@@ -69,7 +70,7 @@ class Group extends Component {
 				{!!this.state.items.length && this.state.items.map(item =>
 					<Item key={item["ID"]} itemID={item["ID"]} itemName={item["Name"]} itemCompletedQty={item["Submit_Qty"]}
 								itemMinQty={item["Min"]} itemMaxQty={item["Max"]} itemTooltip={item["Description"]} itemPtsPer={item["Pts_Per"]}
-								updatePoints={this.updatePointsForItem.bind(this)}
+								updateItemForGroup={this.updateItemForGroup.bind(this)}
 						/>
 				)}
 				{this.props.children}
@@ -79,19 +80,18 @@ class Group extends Component {
 }
 
 class Item extends Component {
-	constructor(props) {
+	/*constructor(props) {
 		super(props);
 		//this.state = {completed: 0, points: 0}
-	}
+	}*/
 	componentDidMount() {
 		//this.setState({points: this.props.itemCompletedQty * this.props.itemPtsPer});
 	}
 	handleCompletedChange(value) {
-		let points = value * this.props.itemPtsPer;
 		//this.setState({completed: value});
 		//this.setState({points: points});
 		//console.log("Completed change" + this.props.itemID + " " + points);
-		this.props.updatePoints(this.props.itemID, points);
+		this.props.updateItemForGroup(this.props.itemID, value);
 	}
 	render() {
 		// Different color for required versus non-requried items
@@ -143,7 +143,7 @@ class RequiredTotal extends Component { /* Used for both Items and Groups to sim
 export default class List extends Component {
 	constructor(props) {
 		super(props);
-		this.state = { error: false, data: null, user: null };
+		this.state = { error: false, data: null, user: null, totalPoints: 0 };
 	}
 	componentDidMount() {
     // Fetch list info
@@ -174,6 +174,7 @@ export default class List extends Component {
           return res.json();
         })
         .then(data3 => {
+          let totalPoints = 0;
           // Iterate through all group items and check if they are set or not
           let groups = data[0]["Groups"];
           for (let i = 0; i < groups.length; i++) { // TODO: Revise to maps or somethin this is messy
@@ -183,7 +184,10 @@ export default class List extends Component {
                 let groupItem = groupItems[j];
                 if (data3[groupItem["ID"]] && typeof data3[groupItem["ID"]] !== 'undefined') {
                   if ("Unapproved Qty" in data3[groupItem["ID"]]) {
-                    data[0]["Groups"][i]["Items"][j]["Submit_Qty"] = data3[groupItem["ID"]]["Unapproved Qty"];
+                    let unapprovedQty = data3[groupItem["ID"]]["Unapproved Qty"]; // Previously submitted qty
+                    groupItem["Qty"] = unapprovedQty;
+                    groupItem["Submit_Qty"] = unapprovedQty;
+                    this.setState({totalPoints: this.state.totalPoints + parseInt(unapprovedQty, 10) * parseInt(groupItem["Pts_Per"], 10)});
                   }
                   /*
                   // TODO: Approved quantities
@@ -212,6 +216,37 @@ export default class List extends Component {
 			this.setState({error: err.toString()});
 		});
 	}
+  updateItemForList(groupID, itemID, qty) {
+    console.log(this.state);
+    let groups = this.state.data["Groups"];
+    let groupItems = groups[groupID]["Items"];
+    let groupItemID = -1;
+    for (let i = 0; groupItemID === -1 && i < groupItems.length; i++) {
+      if (groupItems[i]["ID"] == itemID) {
+        groupItemID = i;
+      }
+    }
+    if (groupItemID >= 0) { // group item to update was found!
+      // Get current quantities
+      let pointsPer = groups[groupID]["Items"][groupItemID]["Pts_Per"];
+      let prevQty = groups[groupID]["Items"][groupItemID]["Qty"] ? groups[groupID]["Items"][groupItemID]["Qty"] : 0;
+      this.setState({
+        totalPoints: (this.state.totalPoints + (qty - prevQty) * pointsPer)
+      });
+      // Set quantity
+      groups[groupID]["Items"][groupItemID]["Qty"] = qty;
+      // Change state of data
+      this.setState({ // TODO: Is this efficient? Not sure.
+        data: {
+          ...this.state.data,
+          groups
+        }
+      });
+      console.log(this.state);
+    } else {
+      this.setState({error: "Group item not found on update: GROUP: " + groupID + " ITEM: " + itemID + ". Please screenshot & report!"});
+    }
+  }
 	render() {
 		if (this.state.error) { // Removed redirect for now for testing.
 			//setTimeout(() => { this.props.history.push("/") }, 4500);
@@ -224,7 +259,7 @@ export default class List extends Component {
 			return (
 				<div>
 					<h3>{ this.state.data["Name"] }</h3>
-					{ (this.state.user !== null ) ? (<p>Name: {this.state.user["Name"]}</p>) : (<p></p>) }
+					{ (this.state.user !== null ) ? (<p>Name: {this.state.user["Name"]}<br/>Points: {this.state.totalPoints} / {this.state.data["Min_Pts"]}</p>) : (<p></p>) }
 					<Group groupName='Group Name' groupCurrentPts='Current Points' groupMinPts='Required Points'>
 						<Item itemName='Item Name' itemCompletedQty='Completed Qty' itemMinQty='Required Qty' itemPtsPer='Pts Per'/>
 					</Group>
@@ -232,9 +267,9 @@ export default class List extends Component {
 					{this.state.data["Groups"].map((group) => {
 						if (group !== null) {
 							return (
-								<Group items={group["Items"]} key={group["ID"]} groupName={group["Name"]} groupCurrentPts={0} groupMinPts={group["Min_Pts"]} groupMaxPts={group["Max_Pts"]} />
+								<Group updateItemForList={this.updateItemForList.bind(this)} items={group["Items"]} key={group["ID"]} groupID={group["ID"]} groupName={group["Name"]} groupCurrentPts={0} groupMinPts={group["Min_Pts"]} groupMaxPts={group["Max_Pts"]} />
 							)
-						}}) }
+						}})}
 					{/*<button className='List-btn'>Reload</button>
 					<button className='List-btn'>Submit</button><br/>
 					<button className='List-btn'>Approved <label className="Switch">
