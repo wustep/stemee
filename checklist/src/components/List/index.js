@@ -217,7 +217,6 @@ export default class List extends Component {
 		});
 	}
   updateItemForList(groupID, itemID, qty) {
-    console.log(this.state);
     let groups = this.state.data["Groups"];
     let groupItems = groups[groupID]["Items"];
     let groupItemID = -1;
@@ -242,9 +241,36 @@ export default class List extends Component {
           groups
         }
       });
-      console.log(this.state);
     } else {
       this.setState({error: "Group item not found on update: GROUP: " + groupID + " ITEM: " + itemID + ". Please screenshot & report!"});
+    }
+  }
+  handleReload() {
+    if (window.confirm("Are you sure? You will lose all data since the last time you clicked submit!")) {
+      window.location.reload()
+    }
+  }
+  handleSubmit() {
+    let groups = this.state.data["Groups"];
+    let changes = 0;
+    for (let i = 0; i < groups.length; i++) {
+      if (groups[i]) {
+        let items = groups[i]["Items"];
+        for (let j = 0; j < items.length; j++) {
+          // Check for changed item
+          if (items[j] && items[j]["Qty"] != items[j]["Submit_Qty"]) {
+            items[j]["Submit_Qty"] = items[j]["Qty"]; // TODO: This is setting state w/o setState. bad?
+            // TODO: Add change to spreadsheet!
+            changes++;
+          }
+        }
+      }
+    }
+    // Inform user of changes (if any)
+    if (changes) {
+      alert(`Submitted ${changes} change${(changes > 1) ? "s" : ""}`); // Pluralize
+    } else {
+      alert("No changes to submit!");
     }
   }
 	render() {
@@ -270,12 +296,8 @@ export default class List extends Component {
 								<Group updateItemForList={this.updateItemForList.bind(this)} items={group["Items"]} key={group["ID"]} groupID={group["ID"]} groupName={group["Name"]} groupCurrentPts={0} groupMinPts={group["Min_Pts"]} groupMaxPts={group["Max_Pts"]} />
 							)
 						}})}
-					{/*<button className='List-btn'>Reload</button>
-					<button className='List-btn'>Submit</button><br/>
-					<button className='List-btn'>Approved <label className="Switch">
-						<input type="checkbox"/>
-						<span className="Slider Slider-round"></span>
-					</label></button>*/}
+					<button className='List-btn' onClick={this.handleReload}>Reload</button>
+					<button className='List-btn' onClick={this.handleSubmit.bind(this)}>Submit</button><br/>
 					<br/>
 				</div>
 			);
