@@ -12,8 +12,11 @@ class Group extends Component {
 		super(props);
 		let totalPoints = 0;
 		this.state = { items: (typeof this.props.items !== 'undefined') ? this.props.items.map(item => {
-			item.points = 0; // TODO: Load actual user's points here.
-			totalPoints += 0;
+			item.points = 0;
+      if (item["Submit_Qty"]) {
+        item.points = item["Submit_Qty"] * item["Pts_Per"];
+			  totalPoints += item.points;
+      }
 			return item;
 		}) : [], totalPoints: totalPoints };
 	}
@@ -34,7 +37,7 @@ class Group extends Component {
 			let fraction = current / req;
 			let left = fraction / 2 * 100; // We have the real percentage be equidistant from the left and right gradient marks
 			let right = left * 3;
-			console.log('linear-gradient(to right, rgb(0, 180, 140) ' + left + '%, rgb(160,50,50) ' + right + '%)');
+			//console.log('linear-gradient(to right, rgb(0, 180, 140) ' + left + '%, rgb(160,50,50) ' + right + '%)');
 			return 'linear-gradient(to right, rgb(0, 180, 140) ' + left + '%, rgb(160,50,50) ' + right + '%)';
 		}
 	}
@@ -64,7 +67,7 @@ class Group extends Component {
 								 maxQty={this.props.groupMaxPts} />
 				</span><br/>
 				{!!this.state.items.length && this.state.items.map(item =>
-					<Item key={item["ID"]} itemID={item["ID"]} itemName={item["Name"]} itemCompletedQty='0'
+					<Item key={item["ID"]} itemID={item["ID"]} itemName={item["Name"]} itemCompletedQty={item["Submit_Qty"]}
 								itemMinQty={item["Min"]} itemMaxQty={item["Max"]} itemTooltip={item["Description"]} itemPtsPer={item["Pts_Per"]}
 								updatePoints={this.updatePointsForItem.bind(this)}
 						/>
@@ -87,7 +90,7 @@ class Item extends Component {
 		let points = value * this.props.itemPtsPer;
 		//this.setState({completed: value});
 		//this.setState({points: points});
-		console.log("Completed change" + this.props.itemID + " " + points);
+		//console.log("Completed change" + this.props.itemID + " " + points);
 		this.props.updatePoints(this.props.itemID, points);
 	}
 	render() {
@@ -143,6 +146,7 @@ export default class List extends Component {
 		this.state = { error: false, data: null, user: null };
 	}
 	componentDidMount() {
+    // Fetch list info
 		fetch(apiURL + "/list/" + this.props.match.params.list)
 		.then(res => { // TODO: Improve this error formatting
 			if (!res.ok) {
@@ -151,22 +155,57 @@ export default class List extends Component {
 			return res.json();
 		})
 		.then(data => {
-			this.setState({data: data[0]});
-		})
-		.catch(err => {
-			console.log(err.toString());
-			this.setState({error: err.toString()});
-		});
-
-		fetch(apiURL + "/user/" + this.props.match.params.user) // TODO: Get /user/list, but also minimize API calls
-		.then(res => {
-			if (!res.ok) {
-				throw new Error("Error fetching User ID!");
-			}
-			return res.json();
-		})
-		.then(data => {
-			this.setState({user: data[0]});
+      // Fetch user info
+      fetch(apiURL + "/user/" + this.props.match.params.user) // TODO: Maybe minimize API calls here...
+      .then(res => {
+        if (!res.ok) {
+          throw new Error("Error fetching User ID!");
+        }
+        return res.json();
+      })
+      .then(data2 => {
+        this.setState({user: data2[0]});
+        // Fetch user's list
+        fetch(apiURL + "/user/" + this.props.match.params.user + "/list/" + this.props.match.params.list)
+        .then(res => {
+          if (!res.ok) {
+            throw new Error("Error fetching User ID's List!");
+          }
+          return res.json();
+        })
+        .then(data3 => {
+          // Iterate through all group items and check if they are set or not
+          let groups = data[0]["Groups"];
+          for (let i = 0; i < groups.length; i++) { // TODO: Revise to maps or somethin this is messy
+            if (data[0]["Groups"][i]) {
+              let groupItems = data[0]["Groups"][i]["Items"];
+              for (let j = 0; groupItems && j < groupItems.length; j++) {
+                let groupItem = groupItems[j];
+                if (data3[groupItem["ID"]] && typeof data3[groupItem["ID"]] !== 'undefined') {
+                  if ("Unapproved Qty" in data3[groupItem["ID"]]) {
+                    data[0]["Groups"][i]["Items"][j]["Submit_Qty"] = data3[groupItem["ID"]]["Unapproved Qty"];
+                  }
+                  /*
+                  // TODO: Approved quantities
+                  if ("Approved Qty" in data3[groupItem["ID"]]) {
+                    data[0]["Groups"][i]["Items"][j]["Approved Qty"] = data3[groupItem["ID"]]["Approved Qty"];
+                  }
+                  */
+                }
+              }
+            }
+          }
+          this.setState({data: data[0]}); // Set data after running through all that stuff.
+        })
+        .catch(err => {
+          console.log(err.toString());
+          this.setState({error: err.toString()});
+        });
+      })
+      .catch(err => {
+        console.log(err.toString());
+        this.setState({error: err.toString()});
+      });
 		})
 		.catch(err => {
 			console.log(err.toString());
@@ -174,11 +213,11 @@ export default class List extends Component {
 		});
 	}
 	render() {
-		if (this.state.error) {
-			setTimeout(() => { this.props.history.push("/") }, 4500);
+		if (this.state.error) { // Removed redirect for now for testing.
+			//setTimeout(() => { this.props.history.push("/") }, 4500);
 			return (
 				<div className='err'>
-					<p>{this.state.error} Redirecting you now...</p>
+					<p>{this.state.error}.</p>
 				</div>
 			);
 		} else if (this.state.data) {
@@ -193,7 +232,7 @@ export default class List extends Component {
 					{this.state.data["Groups"].map((group) => {
 						if (group !== null) {
 							return (
-								<Group items={group["Items"]} key={group["ID"]} groupName={group["Name"]} groupCurrentPts='0' groupMinPts={group["Min_Pts"]} groupMaxPts={group["Max_Pts"]} />
+								<Group items={group["Items"]} key={group["ID"]} groupName={group["Name"]} groupCurrentPts={0} groupMinPts={group["Min_Pts"]} groupMaxPts={group["Max_Pts"]} />
 							)
 						}}) }
 					{/*<button className='List-btn'>Reload</button>

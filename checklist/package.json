@@ -9,6 +9,7 @@
     "express": "^4.15.4",
     "google-auth-library": "^0.10.0",
     "googleapis": "^20.1.0",
+    "moment": "^2.19.3",
     "nodemon": "^1.11.0",
     "react": "^15.6.1",
     "react-dom": "^15.6.1",

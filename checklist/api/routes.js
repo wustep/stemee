@@ -1,9 +1,11 @@
 import apicache from 'apicache'
 import express from 'express';
 import spreadsheet from './spreadsheets';
-
+import moment from 'moment';
 const routes = express.Router();
 let cache = apicache.middleware;
+
+/* TODO: Modularize this */
 
 // Make sure CORS isnt blocked for API calls from client
 routes.use((req, res, next) => { // TODO: Not sure if this is good practice?
@@ -18,7 +20,8 @@ routes.use((req, res, next) => { // TODO: Not sure if this is good practice?
 var lists = []; // Lists array. lists[i] returns name of list
 var listTypes = []; // Types and list availability. types[i] returns array of available list IDs
 
-spreadsheet("Types_Lists", (data) => { // Populate type / list map
+// Populate type / list map
+spreadsheet("Types_Lists", (data) => {
   for (let i = 1; i < data.length; i++) {
     if (!isNaN(data[i][0])) { // Must be number validation
       listTypes[data[i][0]] = [];
@@ -48,10 +51,12 @@ spreadsheet("Lists", (data) => { // Populate list / id map
    console.log(lists);
 });
 
+// / --> nothin
 routes.get('/', cache('7 days'), (req, res) => {
   res.status(200).send("Checklist API");
 });
 
+// /list --> show lists
 routes.get('/list', cache('1 day'), (req, res) => { // Unused for now
   var result = [];
   for (let i = 1; i < lists.length; i++) { // Uses List starting at 1 and incrementing...may not be reliable later
@@ -60,6 +65,7 @@ routes.get('/list', cache('1 day'), (req, res) => { // Unused for now
   res.status(200).send(result);
 });
 
+// /list/# --> show items in that list
 routes.get('/list/:listid', cache('1 day'), (req, res) => {
   spreadsheet("Items", (items) => {
     spreadsheet("Lists", (data) => {
@@ -111,6 +117,7 @@ routes.get('/list/:listid', cache('1 day'), (req, res) => {
   });
 });
 
+// /user/# --> get user's lists and type
 routes.get('/user/:userid', cache('1 day'), (req, res) => {
   spreadsheet("Users", (data) => {
      let userFound = false;
@@ -136,8 +143,50 @@ routes.get('/user/:userid', cache('1 day'), (req, res) => {
    });
 });
 
+// /user/#/list/# --> get user's list's data
 routes.get('/user/:userid/list/:listid', cache('10 minutes'), (req, res) => {
-  res.status(200).send("TODO!");
+  spreadsheet("Users", (data) => {
+     let userFound = false;
+     let result = [];
+     let {userid} = req.params;
+     let {listid} = req.params;
+     for (let i = 1; i < data.length; i++) {
+       if (data[i].length < 3) {
+         console.log("Error: Lists call returned " + data[i].legnth + " columns, expected >=3");
+         res.status(500).send("Server error");
+         return;
+       }
+       if (data[i][0] == userid) {
+         userFound = true;
+         break;
+       }
+     }
+     if (userFound) {
+       spreadsheet("Entries", (data) => {
+          let userListFound = false;
+          // For now, just traverse from top to bottom and assume that it will replace
+          // User ID | Entry List | Entry Item | Entry Approved | Entry Qty | Date
+          for (let j = 1; j < data.length; j++ ) {
+            if (data[j][0] == userid && data[j][1] == listid) {
+              userListFound = true;
+              let approval = (data[j][3] == "TRUE") ? "Approved" : "Unapproved";
+              if (!result[data[j][2]]) {
+                result[data[j][2]] = {}
+              }
+              result[data[j][2]][approval + " Qty"] = data[j][4];
+              result[data[j][2]][approval + " Date"] = data[j][5];
+            }
+          }
+          if (userListFound) {
+            res.status(200).send(result);
+          } else {
+            res.status(400).send({"error": "Bad request - User / list not found"});
+          }
+       });
+     } else {
+       res.status(400).send({"error": "Bad request - User / list not found"});
+     }
+   });
 });
 
 module.exports = routes;

@@ -26,7 +26,9 @@ REACT_APP_GOOGLE_ANALYTICS=UA_......
 
 Add a client_secret.json into root following [these instructions](https://developers.google.com/sheets/api/quickstart/nodejs#step_1_turn_on_the_api_name).
 
-With node & npm installed, run 'npm build' and then 'npm start' for production or 'npm run server' and 'npm run client' separately for development.
+With node & npm installed, run 'npm build' and then 'npm start' for production or 'npm run server' and 'npm run client' separately for development. Note: You might need Node >v6.0 for react-scripts!
+
+Info on how to set up the spreadsheet to come!
 
 Full commands list ("npm run [command]")
 ```
