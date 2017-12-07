@@ -80,7 +80,7 @@ routes.get('/list/:listid', cache('1 day'), (req, res) => {
        }
        if (data[i][0] == listid) {
          listFound = true;
-         result.push({"ID": data[i][0], "Name": data[i][1]});
+         result.push({"ID": data[i][0], "Name": data[i][1], "Min_Pts": data[i][2]});
        }
       }
        if (listFound) {
