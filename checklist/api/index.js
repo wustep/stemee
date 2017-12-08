@@ -1,7 +1,9 @@
 import express from 'express';
 import path from 'path';
+import bodyParser from 'body-parser';
 
 import routes from './routes';
+
 require('dotenv').config()
 const app = express();
 
@@ -9,6 +11,7 @@ const app = express();
 console.log(`Server: ${process.env.NODE_ENV}`);
 const port = (process.env.NODE_ENV == 'development') ? process.env.SERVER_PORT : (process.env.PORT ? process.env.PORT : 3010);
 
+app.use(bodyParser.json()); // support json encoded bodies
 app.use('/api', routes);
 
 // TODO: properly send 404 -- not fixed by commit (oops) - https://reacttraining.com/react-router/web/guides/server-rendering

@@ -5,27 +5,37 @@ import googleAuth from 'google-auth-library';
 
 // If modifying these scopes, delete your previously saved credentials
 // at ~/.credentials/sheets.googleapis.com-nodejs-quickstart.json
-var SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly'];
+var SCOPES = ['https://www.googleapis.com/auth/spreadsheets'];
 var TOKEN_DIR = (process.env.HOME || process.env.HOMEPATH ||
     process.env.USERPROFILE) + '/.credentials/';
 var TOKEN_PATH = TOKEN_DIR + 'sheets.googleapis.com-nodejs-quickstart.json';
 
-// Load client secrets from a local file.
-export default function obtain(sheet, callback) {
+function auth(callback) {
   fs.readFile('client_secret.json', function processClientSecrets(err, content) {
     if (err) {
       let error = 'Error loading client secret file: ' + err;
       console.log(error);
       callback(error);
     }
-    // Authorize a client with the loaded credentials, then call the
-    // Google Sheets API.
-     authorize(JSON.parse(content), (auth) => {
-       getSheet(auth, sheet, (res) => {
-         callback(res)
-       });
-     });
+    authorize(JSON.parse(content), (auth) => {
+      callback(auth);
+    });
   });
+}
+
+// TODO: Uhh so is this callback hell yet?
+// Load client secrets from a local file.
+module.exports = {
+  get: (sheet, callback) => {
+    auth((auth) => getSheet(auth, sheet, (res) => {
+      callback(res);
+    }));
+  },
+  post: (sheet, values, callback) => {
+    auth((auth) => postSheet(auth, sheet, values, (res) => {
+      callback(res);
+    }));
+  }
 }
 
 /**
@@ -102,6 +112,9 @@ function storeToken(token) {
   console.log('Token stored to ' + TOKEN_PATH);
 }
 
+/**
+* GET sheet and return its values and log to server
+*/
 function getSheet(auth, sheet, callback) {
   var sheets = google.sheets('v4');
   sheets.spreadsheets.values.get({
@@ -119,6 +132,33 @@ function getSheet(auth, sheet, callback) {
       callback("Error");
     } else {
       console.log("Server: Sent `" + sheet + "` with " + rows.length + " rows");
+      callback(rows);
+    }
+  });
+}
+
+/**
+* POST to sheet and return its values and log to server
+*/
+function postSheet(auth, sheet, values, callback) {
+  var sheets = google.sheets('v4');
+  sheets.spreadsheets.values.append({
+    auth: auth,
+    spreadsheetId: process.env.SPREADSHEET,
+    range: sheet,
+    valueInputOption: 'USER_ENTERED',
+    resource: values
+  }, function(err, res) {
+    if (err) {
+      console.log('The API returned an error: ' + err);
+      return;
+    }
+    var rows = res.updates.updatedRows;
+    if (typeof rows === 'undefined') {
+      console.log('Server: Error in post request');
+      callback("Error");
+    } else {
+      console.log("Server: Posted to `" + sheet + "` with " + rows + " rows");
       callback(rows);
     }
   });

@@ -150,7 +150,7 @@ export default class List extends Component {
     fetch(apiURL + "/list/" + this.props.match.params.list)
     .then(res => { // TODO: Improve this error formatting
       if (!res.ok) {
-        throw new Error("Error fetching User ID!");
+        throw new Error("Error fetching List ID!");
       }
       return res.json();
     })
@@ -169,7 +169,7 @@ export default class List extends Component {
         fetch(apiURL + "/user/" + this.props.match.params.user + "/list/" + this.props.match.params.list)
         .then(res => {
           if (!res.ok) {
-            throw new Error("Error fetching User ID's List!");
+            throw new Error("Error fetching User List!");
           }
           return res.json();
         })
@@ -252,23 +252,53 @@ export default class List extends Component {
   }
   handleSubmit() {
     let groups = this.state.data["Groups"];
-    let changes = 0;
+    let changes = {};
+    let changePts = 0;
     for (let i = 0; i < groups.length; i++) {
       if (groups[i]) {
         let items = groups[i]["Items"];
         for (let j = 0; j < items.length; j++) {
           // Check for changed item
-          if (items[j] && items[j]["Qty"] != items[j]["Submit_Qty"]) {
-            items[j]["Submit_Qty"] = items[j]["Qty"]; // TODO: This is setting state w/o setState. bad?
-            // TODO: Add change to spreadsheet!
-            changes++;
+          let priorSubmitQty = (typeof items[j]["Submit_Qty"] !== 'undefined') ? parseInt(items[j]["Submit_Qty"]) : 0;
+          if (items[j] && typeof(items[j]["Qty"]) !== 'undefined' && items[j]["Qty"] != priorSubmitQty) {
+            changePts += ((parseInt(items[j]["Qty"]) - priorSubmitQty) * parseInt(items[j]["Pts_Per"]));
+            changes[items[j]["ID"]] = items[j]["Qty"];
+            if (items[j]["Max"] && items[j]["Qty"] > items[j]["Max"]) { // Check for invalid
+              alert("Oops! \"" + items[j]["Name"] + "\" should not exceed " + items[j]["Max"] + ". Changes were not saved!");
+              return;
+            }
           }
         }
       }
     }
     // Inform user of changes (if any)
-    if (changes) {
-      alert(`Submitted ${changes} change${(changes > 1) ? "s" : ""}`); // Pluralize
+    let len = (changes) ? Object.keys(changes).length : 0;
+    if (changes && len > 0) {
+      fetch(apiURL + "/user/" + this.props.match.params.user + "/list/" + this.props.match.params.list,
+           {method: "POST", body: JSON.stringify(changes), headers: new Headers({"Content-Type": "application/json"})})
+      .then(res => {
+        if (!res.ok) {
+          console.log(res);
+          throw new Error("Submitting changes! Changes were not saved.");
+        }
+        return res.json();
+      })
+      .then(json => {
+        // ON success, save Submit_Qtys to state.
+        let groups = this.state.data["Groups"];
+        for (let i = 0; i < groups.length; i++) {
+          if (groups[i]) {
+            let items = groups[i]["Items"];
+            for (let j = 0; j < items.length; j++) {
+              items[j]["Submit_Qty"] = items[j]["Qty"];
+            }
+          }
+        }
+        alert(`Submitted ${len} change${(len > 1) ? 's': ''} with ${changePts} point${(changePts != 0) ? 's' : ''}!`); // Pluralize
+      })
+      .catch(err => {
+        alert(err.toString());
+      });
     } else {
       alert("No changes to submit!");
     }
