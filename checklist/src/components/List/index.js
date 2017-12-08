@@ -4,30 +4,42 @@ import './tooltip.css';
 
 const apiURL = (process.env.NODE_ENV === 'production') ? process.env.REACT_APP_API_PROD : process.env.REACT_APP_API_DEV; // TODO: This is a temp solution for distinguishing API urls
 
-// TODO: Link group points to list points to keep a total current points!
-
 // Group class, which contains items within and calculates points completed
 class Group extends Component {
   constructor(props) {
     super(props);
     let totalPoints = 0;
-    this.state = { items: (typeof this.props.items !== 'undefined') ? this.props.items.map(item => {
-      item.points = 0; // TODO: Change this to "Points" for consistency?
-      if (item["Submit_Qty"]) {
-        item.points = item["Submit_Qty"] * item["Pts_Per"];
-        totalPoints += item.points;
-      }
-      return item;
-    }) : [], totalPoints: totalPoints };
+    this.state = {
+      items: (typeof this.props.items !== 'undefined') ? this.props.items.map(item => {
+        item.points = 0; // TODO: Change this to "Points" for consistency?
+        if (item["Submit_Qty"]) {
+          item.points = item["Submit_Qty"] * item["Pts_Per"];
+          totalPoints += item.points;
+        }
+        return item;
+      }) : [],
+      totalPoints: totalPoints
+    };
   }
+  /**
+  * groupPointsColor() - Returns the proper color given the current points of group in relation to the minimum required points
+  * - white = none
+  * - green = completed
+  * - orange = in progress
+  */
   groupPointsColor() {
     if (isNaN(this.props.groupCurrentPts) || this.state.totalPoints === 0) {
       return "#ffffff"; // White = none
     } else if (this.state.totalPoints >= this.props.groupMinPts) {
       return "#2DE62D"; // Green = completed
     }
-    return "rgb(255, 210, 0)"; // Orange = in progress
+    return "#FFD200"; // Orange = in progress
   }
+  /**
+  * groupBackground() - Returns the proper BG color given the current points of the gruop in relation to the minimum Required
+  * - purple = not required
+  * - gradient from light blue to red ~ based on progress
+  */
   groupBackground() {
     let current = this.state.totalPoints;
     let req = this.props.groupMinPts;
@@ -37,10 +49,12 @@ class Group extends Component {
       let fraction = current / req;
       let left = fraction / 2 * 100; // We have the real percentage be equidistant from the left and right gradient marks
       let right = left * 3;
-      //console.log('linear-gradient(to right, rgb(0, 180, 140) ' + left + '%, rgb(160,50,50) ' + right + '%)');
       return 'linear-gradient(to right, rgb(0, 180, 140) ' + left + '%, rgb(160,50,50) ' + right + '%)';
     }
   }
+  /**
+  * updateItemForGroup() - Given new item-value change, update the group points total
+  */
   updateItemForGroup(itemID, value) {
     if (!!this.state.items.length) {
       let totalPoints = 0;
@@ -80,21 +94,12 @@ class Group extends Component {
 }
 
 class Item extends Component {
-  /*constructor(props) {
-    super(props);
-    //this.state = {completed: 0, points: 0}
-  }*/
-  componentDidMount() {
-    //this.setState({points: this.props.itemCompletedQty * this.props.itemPtsPer});
-  }
+  // State was used prior to carry item points, but this might not be necessary.
   handleCompletedChange(value) {
-    //this.setState({completed: value});
-    //this.setState({points: points});
-    //console.log("Completed change" + this.props.itemID + " " + points);
     this.props.updateItemForGroup(this.props.itemID, value);
   }
+  // Render item as list item with background color based on whether the item is required
   render() {
-    // Different color for required versus non-requried items
     return (
       <li className='Item' style={{background: (!this.props.itemMinQty.isNaN && this.props.itemMinQty > 0) ? "#555555" : "#666666"}}>
         <span className={'Item-name' + (this.props.itemTooltip ? ' Item-tooltip tooltip' : '')} data-tooltip={this.props.itemTooltip}>{this.props.itemName}</span>
@@ -104,7 +109,7 @@ class Item extends Component {
   }
 }
 
-// Min is currently set to always be 0. This is probably always the case, that the minimum a person has done for an entry is 0, but this may change in the future.
+// CompletedQty class - input which passes items-value changes up the chain
 class CompletedQty extends Component { /* Used only for Items */
   handleChange(e) {
     this.props.onCompletedChange(e.target.value);
@@ -126,7 +131,8 @@ class CompletedQty extends Component { /* Used only for Items */
   }
 }
 
-class RequiredTotal extends Component { /* Used for both Items and Groups to simplify tooltipping */
+// RequiredTotal class - span that lists the minimum quantity of items, with max as tooltip
+class RequiredTotal extends Component { /* Used for both Items and Groups */
   render() {
     if (this.props.maxQty) {
       return (
@@ -139,23 +145,25 @@ class RequiredTotal extends Component { /* Used for both Items and Groups to sim
     }
   }
 }
-
+// List > Group > Item
+// Item's "Submit_Qty" denotes the last-saved-to-cloud completed quantity
 export default class List extends Component {
   constructor(props) {
     super(props);
     this.state = { error: false, data: null, user: null, totalPoints: 0 };
   }
+  // On mount, fetch list, user, and user_list and fill the list state accordingly
   componentDidMount() {
-    // Fetch list info
+    // 1. Fetch list info
     fetch(apiURL + "/list/" + this.props.match.params.list)
-    .then(res => { // TODO: Improve this error formatting
+    .then(res => { // TODO: Improve this error formatting?
       if (!res.ok) {
         throw new Error("Error fetching List ID!");
       }
       return res.json();
     })
-    .then(data => {
-      // Fetch user info
+    .then(data => { // TODO: Rename these from data, kinda ambiguous
+      // 2. Fetch user info
       fetch(apiURL + "/user/" + this.props.match.params.user) // TODO: Maybe minimize API calls here...
       .then(res => {
         if (!res.ok) {
@@ -165,7 +173,7 @@ export default class List extends Component {
       })
       .then(data2 => {
         this.setState({user: data2[0]});
-        // Fetch user's list
+        // 3. Fetch user's list
         fetch(apiURL + "/user/" + this.props.match.params.user + "/list/" + this.props.match.params.list)
         .then(res => {
           if (!res.ok) {
@@ -175,31 +183,30 @@ export default class List extends Component {
         })
         .then(data3 => {
           let totalPoints = 0;
-          // Iterate through all group items and check if they are set or not
+          // If item has previously been submitted, set it in the state!
           let groups = data[0]["Groups"];
-          for (let i = 0; i < groups.length; i++) { // TODO: Revise to maps or somethin this is messy
+          for (let i = 0; i < groups.length; i++) { // TODO: This be messy
             if (data[0]["Groups"][i]) {
               let groupItems = data[0]["Groups"][i]["Items"];
               for (let j = 0; groupItems && j < groupItems.length; j++) {
                 let groupItem = groupItems[j];
                 if (data3[groupItem["ID"]] && typeof data3[groupItem["ID"]] !== 'undefined') {
                   if ("Unapproved Qty" in data3[groupItem["ID"]]) {
-                    let unapprovedQty = data3[groupItem["ID"]]["Unapproved Qty"]; // Previously submitted qty
-                    groupItem["Qty"] = unapprovedQty;
-                    groupItem["Submit_Qty"] = unapprovedQty;
+                    let unapprovedQty = data3[groupItem["ID"]]["Unapproved Qty"];
+                    groupItem["Qty"] = groupItem["Submit_Qty"] = unapprovedQty;
                     this.setState({totalPoints: this.state.totalPoints + parseInt(unapprovedQty, 10) * parseInt(groupItem["Pts_Per"], 10)});
                   }
                   /*
-                  // TODO: Approved quantities
+                  // TODO: Deal w/ approved quantities
                   if ("Approved Qty" in data3[groupItem["ID"]]) {
-                    data[0]["Groups"][i]["Items"][j]["Approved Qty"] = data3[groupItem["ID"]]["Approved Qty"];
+                    ...
                   }
                   */
                 }
               }
             }
           }
-          this.setState({data: data[0]}); // Set data after running through all that stuff.
+          this.setState({data: data[0]});
         })
         .catch(err => {
           console.log(err.toString());
@@ -216,16 +223,22 @@ export default class List extends Component {
       this.setState({error: err.toString()});
     });
   }
+  /**
+  * updateItemForList - Adjust list's state when items are changed
+  * - this is bound to the group, which has its own function bound to each item
+  * - passing changes up the chain
+  */
   updateItemForList(groupID, itemID, qty) {
     let groups = this.state.data["Groups"];
     let groupItems = groups[groupID]["Items"];
     let groupItemID = -1;
+    // Search for if the specific groupItem exists & get its ID
     for (let i = 0; groupItemID === -1 && i < groupItems.length; i++) {
       if (groupItems[i]["ID"] == itemID) {
         groupItemID = i;
       }
     }
-    if (groupItemID >= 0) { // group item to update was found!
+    if (groupItemID >= 0) { // Group item to update was found!
       // Get current quantities
       let pointsPer = groups[groupID]["Items"][groupItemID]["Pts_Per"];
       let prevQty = groups[groupID]["Items"][groupItemID]["Qty"] ? groups[groupID]["Items"][groupItemID]["Qty"] : 0;
@@ -245,15 +258,17 @@ export default class List extends Component {
       this.setState({error: "Group item not found on update: GROUP: " + groupID + " ITEM: " + itemID + ". Please screenshot & report!"});
     }
   }
-  handleReload() {
+  handleReload() { // Reload btn
     if (window.confirm("Are you sure? You will lose all data since the last time you clicked submit!")) {
       window.location.reload()
     }
   }
-  handleSubmit() {
+  handleSubmit() { // Submit btn
     let groups = this.state.data["Groups"];
     let changes = {};
     let changePts = 0;
+    // Iterate through and (1) find and store changes (2) verify changes that they don't exceed max
+    // and (3) count the total points added
     for (let i = 0; i < groups.length; i++) {
       if (groups[i]) {
         let items = groups[i]["Items"];
@@ -271,7 +286,7 @@ export default class List extends Component {
         }
       }
     }
-    // Inform user of changes (if any)
+    // Save & inform user of changes (if any)
     let len = (changes) ? Object.keys(changes).length : 0;
     if (changes && len > 0) {
       fetch(apiURL + "/user/" + this.props.match.params.user + "/list/" + this.props.match.params.list,
@@ -283,8 +298,7 @@ export default class List extends Component {
         }
         return res.json();
       })
-      .then(json => {
-        // ON success, save Submit_Qtys to state.
+      .then(json => { // On success, save Submit_Qtys to state.
         let groups = this.state.data["Groups"];
         for (let i = 0; i < groups.length; i++) {
           if (groups[i]) {

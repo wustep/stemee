@@ -16,7 +16,6 @@ const withTracker = (WrappedComponent) => {
     if (process.env.REACT_APP_GOOGLE_ANALYTICS) {
       trackPage(page);
     }
-
     return (
       <WrappedComponent {...props} />
     );
