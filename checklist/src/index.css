@@ -12,13 +12,13 @@ body {
 .Select-btn, .Select-in {
   width: 500px;
   max-width: 95%;
-	margin: 0 0 10px 0;
-	height: 30px;
+  margin: 0 0 10px 0;
+  height: 30px;
 }
 .Select-in::-webkit-outer-spin-button,
 .Select-in::-webkit-inner-spin-button { /* Hide spin button on OSU ID input */
-    -webkit-appearance: none;
-    margin: 0;
+  -webkit-appearance: none;
+  margin: 0;
 }
 
 /* CSSTransitionGroup Fade */

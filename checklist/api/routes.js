@@ -9,12 +9,12 @@ let cache = apicache.middleware;
 
 // Make sure CORS isnt blocked for API calls from client
 routes.use((req, res, next) => { // TODO: Not sure if this is good practice?
-	const origin = process.env.NODE_ENV === 'production' ? process.env.REACT_APP_URL_PROD : process.env.REACT_APP_URL_DEV;
-	res.header("Access-Control-Allow-Origin", origin);
-	res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-	res.header('Access-Control-Allow-Methods', 'GET');
-	res.header("Access-Control-Allow-Credentials", "true")
-	next();
+  const origin = process.env.NODE_ENV === 'production' ? process.env.REACT_APP_URL_PROD : process.env.REACT_APP_URL_DEV;
+  res.header("Access-Control-Allow-Origin", origin);
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  res.header('Access-Control-Allow-Methods', 'GET');
+  res.header("Access-Control-Allow-Credentials", "true")
+  next();
 });
 
 var lists = []; // Lists array. lists[i] returns name of list

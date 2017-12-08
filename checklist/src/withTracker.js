@@ -13,15 +13,15 @@ const withTracker = (WrappedComponent) => {
 
   const HOC = (props) => {
     const page = props.location.pathname;
-	if (process.env.REACT_APP_GOOGLE_ANALYTICS) {
-	  trackPage(page);
-	}
+    if (process.env.REACT_APP_GOOGLE_ANALYTICS) {
+      trackPage(page);
+    }
 
     return (
       <WrappedComponent {...props} />
     );
   };
-  
+
   return HOC;
 };
 

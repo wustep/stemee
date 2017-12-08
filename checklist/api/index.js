@@ -13,13 +13,13 @@ app.use('/api', routes);
 
 // TODO: properly send 404 -- not fixed by commit (oops) - https://reacttraining.com/react-router/web/guides/server-rendering
 if (process.env.NODE_ENV == 'production') {
-	console.log('Server: Serving static assets in production');
-	console.log(`Server: Client assets on port ${port}`);
-	app.use(express.static(path.join(__dirname + "/../", 'build')));
-	app.get('/*', (req, res) => {
-		res.sendFile(path.join(__dirname + "/../", 'build', 'index.html'));
-	});
+  console.log('Server: Serving static assets in production');
+  console.log(`Server: Client assets on port ${port}`);
+  app.use(express.static(path.join(__dirname + "/../", 'build')));
+  app.get('/*', (req, res) => {
+    res.sendFile(path.join(__dirname + "/../", 'build', 'index.html'));
+  });
 }
 app.listen(port, () => {
-	console.log(`Server: Started on port ${port}`)
+  console.log(`Server: Started on port ${port}`)
 });
