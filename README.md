@@ -8,7 +8,7 @@ Add, sort, and delete events by hovering over the Table of Contents
 
 Uses the [Teamup API](http://apidocs.teamup.com/) and [jQueryUI](https://jqueryui.com/)
 
-[Demo available here](http://wustep.github.io/stemee/dcd)
+[Demo available here](http://wustep.github.io/stemee/digest)
 
 # Checklist (/checklist)
 [Program requirements checklist](https://github.com/wustep/stemee/tree/master/checklist)
