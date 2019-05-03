@@ -1,5 +1,0 @@
-# 12 April 2016 - [Media, Sports, Gambling, and Life through Statistics](https://docs.google.com/presentation/d/1MLgvidd40I_sVvfJEZ1cn4xUmIJZdG_CbElYNZWDEno/pub?start=false&loop=false&delayms=15000&slide=id.p)  
-Discussion of applications of statistics in various fields by Stephen Wu and Matt Smerglia
-
-# 15 November 2016 - [Navigating the Internship Application Process](https://docs.google.com/presentation/d/1bxqvawQxSBj3AL5xgzi3raqsFZr6pTw-b5484I1bciw/edit#slide=id.p)
-Overview of the internship application process and what to expect, including resume, interview, career fair, side project, and application info.
